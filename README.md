@@ -2,6 +2,21 @@
 
 [English](#english) | [Русский](#русский)
 
+## Screenshots / Скриншоты
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/images/uefi-raspberry-pi-configuration.jpg" alt="Raspberry Pi Configuration menu with the Cooling Fan entry"></td>
+    <td width="33%"><img src="docs/images/uefi-fan-control-modes.jpg" alt="UEFI Cooling Fan mode selection"></td>
+    <td width="33%"><img src="docs/images/uefi-manual-persistent-warning.jpg" alt="UEFI Manual Persistent fan mode warning"></td>
+  </tr>
+  <tr>
+    <td align="center">Cooling Fan menu / Меню Cooling Fan</td>
+    <td align="center">Automatic, Manual and Manual Persistent modes / Режимы управления</td>
+    <td align="center">Manual Persistent warning / Предупреждение режима Manual Persistent</td>
+  </tr>
+</table>
+
 ## English
 
 Experimental UEFI build for Raspberry Pi 5, tested with VMware ESXi Arm and a Waveshare PoE HAT (F) Rev1.2 with one three-wire fan.

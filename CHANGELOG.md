@@ -13,9 +13,8 @@ All notable published changes are recorded here.
 
 ### Changed
 
+- simplified the repository to ready-to-use firmware and documentation; local experimental builds are published only after hardware validation;
 - disabled automatic HII form refresh after hardware testing showed severe keyboard latency;
-- removed GitHub and container firmware builds; releases now publish only the locally built artifact that is explicitly selected after hardware testing;
-- retained checksum, patch applicability, documentation, SBOM and attestation checks.
 
 ## [0.1.3] - 2026-08-01
 

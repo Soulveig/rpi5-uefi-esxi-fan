@@ -1,6 +1,6 @@
 # Raspberry Pi 5 UEFI: ESXi network ACPI + Waveshare PoE HAT (F) Rev1.2 + Fan Control
 
-[English](#english) | [Русский](#русский) | [Build instructions](BUILD.md) | [Source patches](patches/) | [Changelog](CHANGELOG.md)
+[English](#english) | [Русский](#русский) | [Releases](https://github.com/Soulveig/rpi5-uefi-esxi-fan/releases) | [Changelog](CHANGELOG.md)
 
 ## Screenshots / Скриншоты
 
@@ -101,18 +101,9 @@ In Automatic and standard Manual modes, the firmware restores the saved PWM1 clo
 
 Always keep a known-good rollback image. This is an experimental build and should not be installed without physical access to the Raspberry Pi.
 
-### Source and reproducible build
+### Releases
 
-- [`BUILD.md`](BUILD.md) documents the pinned source revisions, GCC 12.3.1 environment and build process.
-- [`patches/0001-rpi5-esxi-acpi-waveshare-fan.patch`](patches/0001-rpi5-esxi-acpi-waveshare-fan.patch) contains the UEFI source changes and applies to the pinned `edk2-platforms` commit.
-- [`patches/0002-macos-build-compatibility.patch`](patches/0002-macos-build-compatibility.patch) makes the pinned root build script compatible with macOS and prebuilt BaseTools.
-- [`scripts/checkout-source.sh`](scripts/checkout-source.sh) prepares the pinned source tree and applies the patch.
-- [`scripts/build-macos.sh`](scripts/build-macos.sh) checks the compiler and runs the macOS build.
-- [`sbom/RPI_EFI.spdx.json`](sbom/RPI_EFI.spdx.json) records the firmware components and pinned source revisions.
-- [`SECURITY.md`](SECURITY.md) documents vulnerability reporting and operational risks.
-- [`CHANGELOG.md`](CHANGELOG.md) records published firmware changes.
-
-Hardware results can be submitted with the [hardware test report template](https://github.com/Soulveig/rpi5-uefi-esxi-fan/issues/new?template=hardware-test-report.md).
+Only hardware-tested firmware is published in [GitHub Releases](https://github.com/Soulveig/rpi5-uefi-esxi-fan/releases). Experimental images are tested locally first and are not uploaded to GitHub. [`CHANGELOG.md`](CHANGELOG.md) records published firmware changes.
 
 ### Upstream base
 
@@ -128,7 +119,7 @@ Compiler used for the tested build: Arm GNU Toolchain GCC 12.3.1 for macOS.
 
 ### Licenses
 
-The original scripts, patches and documentation in this repository are licensed under [`BSD-2-Clause-Patent`](LICENSE). The firmware combines components from multiple upstream projects whose original licenses remain applicable; see [`UPSTREAM.md`](UPSTREAM.md) and [`LICENSES/`](LICENSES/). This repository does not replace or override the licenses of the firmware components.
+The original documentation in this repository is licensed under [`BSD-2-Clause-Patent`](LICENSE). The firmware combines components from multiple upstream projects whose original licenses remain applicable; see [`UPSTREAM.md`](UPSTREAM.md) and [`LICENSES/`](LICENSES/). This repository does not replace or override the licenses of the firmware components.
 
 ---
 
@@ -216,18 +207,9 @@ The original scripts, patches and documentation in this repository are licensed 
 
 Всегда держите рабочий образ для отката. Сборка экспериментальная и не предназначена для установки без физического доступа к Raspberry Pi.
 
-### Исходный код и воспроизводимая сборка
+### Релизы
 
-- [`BUILD.md`](BUILD.md) содержит точные версии исходников, окружение GCC 12.3.1 и порядок сборки.
-- [`patches/0001-rpi5-esxi-acpi-waveshare-fan.patch`](patches/0001-rpi5-esxi-acpi-waveshare-fan.patch) содержит изменения UEFI и применяется к зафиксированному коммиту `edk2-platforms`.
-- [`patches/0002-macos-build-compatibility.patch`](patches/0002-macos-build-compatibility.patch) адаптирует корневой скрипт зафиксированной версии к macOS и заранее собранным BaseTools.
-- [`scripts/checkout-source.sh`](scripts/checkout-source.sh) подготавливает исходное дерево и применяет патч.
-- [`scripts/build-macos.sh`](scripts/build-macos.sh) проверяет компилятор и запускает сборку на macOS.
-- [`sbom/RPI_EFI.spdx.json`](sbom/RPI_EFI.spdx.json) содержит состав прошивки и версии исходников.
-- [`SECURITY.md`](SECURITY.md) описывает передачу сведений об уязвимостях и эксплуатационные риски.
-- [`CHANGELOG.md`](CHANGELOG.md) содержит историю опубликованных изменений.
-
-Результаты аппаратной проверки можно отправить через [шаблон отчёта](https://github.com/Soulveig/rpi5-uefi-esxi-fan/issues/new?template=hardware-test-report.md).
+В [GitHub Releases](https://github.com/Soulveig/rpi5-uefi-esxi-fan/releases) публикуются только прошедшие аппаратную проверку прошивки. Экспериментальные образы сначала проверяются локально и не загружаются на GitHub. История опубликованных версий находится в [`CHANGELOG.md`](CHANGELOG.md).
 
 ### Исходная основа
 
@@ -243,4 +225,4 @@ The original scripts, patches and documentation in this repository are licensed 
 
 ### Лицензии
 
-Собственные скрипты, патчи и документация этого репозитория опубликованы под лицензией [`BSD-2-Clause-Patent`](LICENSE). Прошивка объединяет компоненты нескольких upstream-проектов, лицензии которых продолжают действовать; ссылки и уведомления приведены в [`UPSTREAM.md`](UPSTREAM.md) и [`LICENSES/`](LICENSES/). Этот репозиторий не заменяет и не переопределяет лицензии компонентов прошивки.
+Собственная документация этого репозитория опубликована под лицензией [`BSD-2-Clause-Patent`](LICENSE). Прошивка объединяет компоненты нескольких upstream-проектов, лицензии которых продолжают действовать; ссылки и уведомления приведены в [`UPSTREAM.md`](UPSTREAM.md) и [`LICENSES/`](LICENSES/). Этот репозиторий не заменяет и не переопределяет лицензии компонентов прошивки.

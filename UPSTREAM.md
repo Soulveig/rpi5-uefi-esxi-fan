@@ -1,6 +1,6 @@
 # Upstream projects and licenses
 
-The firmware image contains or is built from multiple upstream projects. Refer to each project for its complete source code, copyright notices, and license terms. The exact branches and commits are pinned in [`BUILD.md`](BUILD.md).
+The firmware image contains or is built from multiple upstream projects. Refer to each project for its complete source code, copyright notices, and license terms. The exact branches and commits used for the published firmware are listed below.
 
 - [NumberOneGit/rpi5-uefi](https://github.com/NumberOneGit/rpi5-uefi)
 - [worproject/arm-trusted-firmware](https://github.com/worproject/arm-trusted-firmware)

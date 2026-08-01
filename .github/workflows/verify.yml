@@ -12,11 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
 
       - name: Verify scripts and firmware checksum
         run: |
           bash -n scripts/*.sh
+          python3 scripts/verify-docs.py
           sha256sum --check SHA256SUMS
 
       - name: Check for accidental private data
@@ -44,3 +47,30 @@ jobs:
         run: |
           version="${GITHUB_REF_NAME#v}"
           grep -Fq "## [$version]" CHANGELOG.md
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out verified tag
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Publish tagged release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "Release $GITHUB_REF_NAME already exists; leaving it unchanged."
+            exit 0
+          fi
+          gh release create "$GITHUB_REF_NAME" \
+            firmware/RPI_EFI.fd \
+            SHA256SUMS \
+            patches/*.patch \
+            --verify-tag \
+            --title "Raspberry Pi 5 UEFI $GITHUB_REF_NAME" \
+            --generate-notes

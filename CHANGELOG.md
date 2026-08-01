@@ -4,7 +4,11 @@ All notable published changes are recorded here.
 
 ## [Unreleased]
 
-- No firmware changes yet.
+- added a repository-level BSD-2-Clause-Patent license for original project material;
+- pinned the GitHub checkout action to an immutable commit;
+- added local Markdown-link and required-artifact validation;
+- added automatic GitHub Release publication for verified version tags;
+- enabled protected-main workflow requirements.
 
 ## [0.1.1] - 2026-08-01
 

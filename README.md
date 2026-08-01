@@ -124,7 +124,7 @@ Compiler used for the tested build: Arm GNU Toolchain GCC 12.3.1 for macOS.
 
 ### Licenses
 
-The firmware combines components from multiple upstream projects. Their original licenses remain applicable; see [`UPSTREAM.md`](UPSTREAM.md) and [`LICENSES/`](LICENSES/). This repository does not replace or override the licenses of the firmware components.
+The original scripts, patches and documentation in this repository are licensed under [`BSD-2-Clause-Patent`](LICENSE). The firmware combines components from multiple upstream projects whose original licenses remain applicable; see [`UPSTREAM.md`](UPSTREAM.md) and [`LICENSES/`](LICENSES/). This repository does not replace or override the licenses of the firmware components.
 
 ---
 
@@ -235,4 +235,4 @@ The firmware combines components from multiple upstream projects. Their original
 
 ### Лицензии
 
-Прошивка объединяет компоненты нескольких upstream-проектов. Их исходные лицензии продолжают действовать; ссылки и копии уведомлений приведены в [`UPSTREAM.md`](UPSTREAM.md) и [`LICENSES/`](LICENSES/). Этот репозиторий не заменяет и не переопределяет лицензии компонентов прошивки.
+Собственные скрипты, патчи и документация этого репозитория опубликованы под лицензией [`BSD-2-Clause-Patent`](LICENSE). Прошивка объединяет компоненты нескольких upstream-проектов, лицензии которых продолжают действовать; ссылки и уведомления приведены в [`UPSTREAM.md`](UPSTREAM.md) и [`LICENSES/`](LICENSES/). Этот репозиторий не заменяет и не переопределяет лицензии компонентов прошивки.

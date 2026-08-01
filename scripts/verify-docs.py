@@ -17,6 +17,7 @@ REQUIRED = (
     "SHA256SUMS",
     "sbom/RPI_EFI.spdx.json",
     "firmware/RPI_EFI.fd",
+    "firmware/RPI_EFI-RPi5-nonD0.fd",
     "patches/0001-rpi5-esxi-acpi-waveshare-fan.patch",
     "patches/0002-macos-build-compatibility.patch",
 )

@@ -74,7 +74,7 @@ A rebuild should be functionally equivalent. Byte-for-byte identity can depend o
 
 ## Container build
 
-The repository also provides a Linux container with Arm GNU Toolchain 12.3.Rel1 pinned by its official SHA-256 checksum:
+The repository also provides a Linux container with the Ubuntu base image pinned by digest, APT packages resolved from the immutable `20260801T000000Z` Ubuntu snapshot, and Arm GNU Toolchain 12.3.Rel1 pinned by its official SHA-256 checksum:
 
 ```bash
 docker build -t rpi5-uefi-builder:12.3 .

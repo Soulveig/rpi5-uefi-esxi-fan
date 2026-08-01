@@ -4,7 +4,10 @@ All notable published changes are recorded here.
 
 ## [Unreleased]
 
-- No changes yet.
+- pinned the Ubuntu container image by digest and APT packages to an immutable snapshot;
+- made SPDX SBOM generation release-version aware;
+- added the explicit non-D0 firmware filename to `SHA256SUMS`;
+- made the full container build part of required `verify` when build-chain files change.
 
 ## [0.1.2] - 2026-08-01
 

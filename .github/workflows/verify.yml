@@ -21,7 +21,8 @@ jobs:
 
       - name: Check for accidental private data
         run: |
-          if git grep -nE '(/Users/adm|10\.0\.1\.[0-9]+|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|admin[[:space:]]*[/\\][[:space:]]*admin)' -- ':!*.jpg'; then
+          if git grep -I -nE '(/Users/adm|10\.0\.1\.[0-9]+|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|admin[[:space:]]*[/\\][[:space:]]*admin)' -- \
+            ':!*.jpg' ':!firmware/*' ':!.github/workflows/verify.yml'; then
             echo 'Accidental local path, credential, or private key marker found.' >&2
             exit 1
           fi

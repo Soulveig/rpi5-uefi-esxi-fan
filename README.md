@@ -1,6 +1,6 @@
 # Raspberry Pi 5 UEFI: ESXi network ACPI + Waveshare PoE HAT (F) Rev1.2 + Fan Control
 
-[English](#english) | [Русский](#русский) | [Build instructions](BUILD.md) | [Source patch](patches/0001-rpi5-esxi-acpi-waveshare-fan.patch) | [Changelog](CHANGELOG.md)
+[English](#english) | [Русский](#русский) | [Build instructions](BUILD.md) | [Source patches](patches/) | [Changelog](CHANGELOG.md)
 
 ## Screenshots / Скриншоты
 
@@ -103,6 +103,7 @@ Always keep a known-good rollback image. This is an experimental build and shoul
 
 - [`BUILD.md`](BUILD.md) documents the pinned source revisions, GCC 12.3.1 environment and build process.
 - [`patches/0001-rpi5-esxi-acpi-waveshare-fan.patch`](patches/0001-rpi5-esxi-acpi-waveshare-fan.patch) contains the UEFI source changes and applies to the pinned `edk2-platforms` commit.
+- [`patches/0002-macos-build-compatibility.patch`](patches/0002-macos-build-compatibility.patch) makes the pinned root build script compatible with macOS and prebuilt BaseTools.
 - [`scripts/checkout-source.sh`](scripts/checkout-source.sh) prepares the pinned source tree and applies the patch.
 - [`scripts/build-macos.sh`](scripts/build-macos.sh) checks the compiler and runs the macOS build.
 - [`CHANGELOG.md`](CHANGELOG.md) records published firmware changes.
@@ -213,6 +214,7 @@ The firmware combines components from multiple upstream projects. Their original
 
 - [`BUILD.md`](BUILD.md) содержит точные версии исходников, окружение GCC 12.3.1 и порядок сборки.
 - [`patches/0001-rpi5-esxi-acpi-waveshare-fan.patch`](patches/0001-rpi5-esxi-acpi-waveshare-fan.patch) содержит изменения UEFI и применяется к зафиксированному коммиту `edk2-platforms`.
+- [`patches/0002-macos-build-compatibility.patch`](patches/0002-macos-build-compatibility.patch) адаптирует корневой скрипт зафиксированной версии к macOS и заранее собранным BaseTools.
 - [`scripts/checkout-source.sh`](scripts/checkout-source.sh) подготавливает исходное дерево и применяет патч.
 - [`scripts/build-macos.sh`](scripts/build-macos.sh) проверяет компилятор и запускает сборку на macOS.
 - [`CHANGELOG.md`](CHANGELOG.md) содержит историю опубликованных изменений.

@@ -1,0 +1,42 @@
+diff --git a/build.sh b/build.sh
+index 22610c7299bbc990343aaf534bac3a17f5c7fda1..e7bda38ef3d4f2b8049077eec5efc7439c1915e2 100755
+--- a/build.sh
++++ b/build.sh
+@@ -27,8 +27,12 @@ print_usage() {
+ #
+ # Get options
+ #
+-OPTS=$(getopt -o '' -l 'model:,debug:,tfa-flags:,edk2-flags:,help' -- "${@}") || print_usage $?
+-eval set -- "${OPTS}"
++if [[ $# -gt 0 ]]; then
++    OPTS=$(getopt -o '' -l 'model:,debug:,tfa-flags:,edk2-flags:,help' -- "${@}") || print_usage $?
++    eval set -- "${OPTS}"
++else
++    set -- --
++fi
+ while true; do
+     case "${1}" in
+         --model) MODEL="${2}"; shift 2 ;;
+@@ -90,13 +94,20 @@ else
+     RELEASE_TYPE="RELEASE"
+ fi
+ 
+-ATF_BUILD_DIR="${PWD}/arm-trusted-firmware/build/rpi${MODEL}/${RELEASE_TYPE,,}"
++if [[ "${RELEASE_TYPE}" == "DEBUG" ]]; then
++    ATF_BUILD_SUBDIR="debug"
++else
++    ATF_BUILD_SUBDIR="release"
++fi
++ATF_BUILD_DIR="${PWD}/arm-trusted-firmware/build/rpi${MODEL}/${ATF_BUILD_SUBDIR}"
+ 
+ export GCC_AARCH64_PREFIX="${CROSS_COMPILE}"
+ export WORKSPACE=${PWD}
+ export PACKAGES_PATH=${WORKSPACE}/edk2:${WORKSPACE}/edk2-platforms:${WORKSPACE}/edk2-non-osi
+ 
+-make -C ${WORKSPACE}/edk2/BaseTools || exit
++# BaseTools were already built in this workspace; rebuilding on macOS invokes
++# an unavailable legacy `python` test runner.
++test -x ${WORKSPACE}/edk2/BaseTools/Source/C/bin/GenFv || exit
+ 
+ source ${WORKSPACE}/edk2/edksetup.sh || exit
+ 

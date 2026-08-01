@@ -1,6 +1,6 @@
 # Reproducing the firmware build
 
-This document describes the source state used for `v0.1.0`. The published patch has been verified with `git apply --check` against the pinned `edk2-platforms` commit.
+This document describes the source state published with `v0.1.1`. Both patches have been verified with `git apply --check` against their pinned upstream commits, and a clean-room checkout and build completed successfully on macOS.
 
 ## Requirements
 
@@ -35,7 +35,7 @@ From this repository, run:
 ./scripts/checkout-source.sh ./build/source
 ```
 
-The script checks out every pinned revision, initializes nested submodules and applies [`patches/0001-rpi5-esxi-acpi-waveshare-fan.patch`](patches/0001-rpi5-esxi-acpi-waveshare-fan.patch).
+The script checks out every pinned revision, initializes EDK2's direct build dependencies, applies [`patches/0001-rpi5-esxi-acpi-waveshare-fan.patch`](patches/0001-rpi5-esxi-acpi-waveshare-fan.patch), and applies the small root-build compatibility patch [`patches/0002-macos-build-compatibility.patch`](patches/0002-macos-build-compatibility.patch). It deliberately does not recurse into test-only submodules nested inside projects such as OpenSSL.
 
 To check the patch without applying it:
 
@@ -54,9 +54,9 @@ export IASL_BIN="/absolute/path/to/acpica/bin"
 ./scripts/build-macos.sh ./build/source
 ```
 
-The wrapper verifies the compiler version, sets `CROSS_COMPILE=aarch64-none-elf-`, invokes the upstream `build.sh` with its Raspberry Pi 5 release defaults, and copies the result to `build/output/RPI_EFI.fd`. It intentionally passes no command-line options because that old upstream script expects GNU `getopt` when options are supplied, while macOS provides a different implementation.
+The wrapper verifies the compiler version, builds the required BaseTools C utilities when absent, sets `CROSS_COMPILE=aarch64-none-elf-`, invokes the patched upstream `build.sh` with its Raspberry Pi 5 release defaults, and copies the result to `build/output/RPI_EFI.fd`. It intentionally passes no command-line options because that old upstream script expects GNU `getopt` when options are supplied, while macOS provides a different implementation.
 
-The upstream build expects EDK2 BaseTools to be available. If they have not been built in the new workspace, build them according to the pinned EDK2 branch before invoking the wrapper. The previously tested macOS workspace used already-built BaseTools because that branch's legacy test runner expects a `python` command.
+Only the BaseTools C utilities required by the firmware build are compiled. The old branch's unrelated Python test suite is not invoked because it expects a legacy `python` command and is not part of producing `RPI_EFI.fd`.
 
 ## Verify the result
 
@@ -64,7 +64,7 @@ The upstream build expects EDK2 BaseTools to be available. If they have not been
 shasum -a 256 ./build/output/RPI_EFI.fd
 ```
 
-The published `v0.1.0` binary has SHA-256:
+The hardware-tested firmware retained in `v0.1.1` has SHA-256:
 
 ```text
 fe8b19fe7917df07952be0a40e176a4c6eaef238d0bc83206e43e870800bb8a0

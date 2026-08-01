@@ -1,5 +1,5 @@
 diff --git a/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.c b/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.c
-index 5ad3c708b7a5db60a2caf6498c3443e29899c12d..ce6b6fac1e7f6b208dec0bf1f86ac8385ba1ca62 100644
+index 5ad3c708b7a5db60a2caf6498c3443e29899c12d..f7a508aa36e1b55b190cee4a873627b1aeb749a6 100644
 --- a/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.c
 +++ b/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.c
 @@ -20,6 +20,10 @@
@@ -48,13 +48,8 @@ index 5ad3c708b7a5db60a2caf6498c3443e29899c12d..ce6b6fac1e7f6b208dec0bf1f86ac838
    DEBUG ((DEBUG_INFO, "Installed devicetree at address %p\n", mFdtImage));
    Status = gBS->InstallConfigurationTable (&gFdtTableGuid, mFdtImage);
    if (EFI_ERROR (Status)) {
-@@ -559,3 +584,4 @@ out:
-   }
-   return Status;
- }
-+
 diff --git a/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.inf b/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.inf
-index 1ea2fe40be1ee12b774135ead4be87a85f16f653..c76a99676be78d417fafcaf51c28a2d34158786a 100644
+index 1ea2fe40be1ee12b774135ead4be87a85f16f653..717cc88ab80570f83f0f970a43d79723dc0475e8 100644
 --- a/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.inf
 +++ b/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.inf
 @@ -23,6 +23,7 @@
@@ -78,13 +73,8 @@ index 1ea2fe40be1ee12b774135ead4be87a85f16f653..c76a99676be78d417fafcaf51c28a2d3
  
  [Protocols]
    gRaspberryPiFirmwareProtocolGuid              ## CONSUMES
-@@ -56,3 +59,4 @@
- [Pcd]
-   gRaspberryPiTokenSpaceGuid.PcdSystemTableMode
-   gRaspberryPiTokenSpaceGuid.PcdXhciReload
-+
 diff --git a/Platform/RaspberryPi/Drivers/RpiFirmwareDxe/RpiFirmwareDxe.c b/Platform/RaspberryPi/Drivers/RpiFirmwareDxe/RpiFirmwareDxe.c
-index 64db6506b0d4bba8007392d9898e737e479f3b0a..9f072ec9724afd7ce73b82c354f8ef7c13a5aeb0 100644
+index 64db6506b0d4bba8007392d9898e737e479f3b0a..594b22978f54b7d967d5a02a9a6ec6b02eda8e94 100644
 --- a/Platform/RaspberryPi/Drivers/RpiFirmwareDxe/RpiFirmwareDxe.c
 +++ b/Platform/RaspberryPi/Drivers/RpiFirmwareDxe/RpiFirmwareDxe.c
 @@ -1454,6 +1454,48 @@ RpiFirmwareSetRtc (
@@ -144,13 +134,8 @@ index 64db6506b0d4bba8007392d9898e737e479f3b0a..9f072ec9724afd7ce73b82c354f8ef7c
  };
  
  STATIC
-@@ -1598,3 +1641,4 @@ FreeBuffer:
- 
-   return Status;
- }
-+
 diff --git a/Platform/RaspberryPi/Include/Protocol/RpiFirmware.h b/Platform/RaspberryPi/Include/Protocol/RpiFirmware.h
-index 92ab7f84cc85d2963baf230f4264e4847b0128fe..e36c4015d830ceedee363add9b39b2a6bccf62db 100644
+index 92ab7f84cc85d2963baf230f4264e4847b0128fe..06e5600282345cdb3431e3eb3ca6e0ee1745c9ca 100644
 --- a/Platform/RaspberryPi/Include/Protocol/RpiFirmware.h
 +++ b/Platform/RaspberryPi/Include/Protocol/RpiFirmware.h
 @@ -167,6 +167,12 @@ EFI_STATUS
@@ -166,7 +151,7 @@ index 92ab7f84cc85d2963baf230f4264e4847b0128fe..e36c4015d830ceedee363add9b39b2a6
  typedef struct {
    SET_POWER_STATE        SetPowerState;
    GET_MAC_ADDRESS        GetMacAddress;
-@@ -190,8 +196,10 @@ typedef struct {
+@@ -190,6 +196,7 @@ typedef struct {
    GPIO_SET_CFG           SetGpioConfig;
    GET_RTC                GetRtc;
    SET_RTC                SetRtc;
@@ -174,9 +159,6 @@ index 92ab7f84cc85d2963baf230f4264e4847b0128fe..e36c4015d830ceedee363add9b39b2a6
  } RASPBERRY_PI_FIRMWARE_PROTOCOL;
  
  extern EFI_GUID gRaspberryPiFirmwareProtocolGuid;
- 
- #endif /* __RASPBERRY_PI_FIRMWARE_PROTOCOL_H__ */
-+
 diff --git a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/FanControl.c b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/FanControl.c
 new file mode 100644
 index 0000000000000000000000000000000000000000..4da4c1f5d96c234a103feff1b0e928e0ef7fb403
@@ -395,7 +377,7 @@ index 0000000000000000000000000000000000000000..c93275d0a96e123131d911d873502b12
 +
 +#endif
 diff --git a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.c b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.c
-index dab20b8e619811b4123db65e25ffab6b435e6a02..e103d73ed5ad957ccf78b4d04a05b24a426c773f 100644
+index dab20b8e619811b4123db65e25ffab6b435e6a02..a58b0333cac91dcaea4822102c8067ec31dc4f1b 100644
 --- a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.c
 +++ b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.c
 @@ -17,6 +17,7 @@
@@ -422,13 +404,8 @@ index dab20b8e619811b4123db65e25ffab6b435e6a02..e103d73ed5ad957ccf78b4d04a05b24a
  }
  
  EFI_STATUS
-@@ -139,3 +142,4 @@ RpiPlatformDxeEntryPoint (
- 
-   return EFI_SUCCESS;
- }
-+
 diff --git a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.inf b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.inf
-index ca2f12d85465a1fdb5a1c5422b07b60ee0cd9348..c2f0f1aabc345d0b78a7d28c10d3e68cd7a9bd96 100644
+index ca2f12d85465a1fdb5a1c5422b07b60ee0cd9348..fab06354bd51531d1e84c2f9abbca4df17441ded 100644
 --- a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.inf
 +++ b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.inf
 @@ -20,6 +20,7 @@
@@ -453,16 +430,11 @@ index ca2f12d85465a1fdb5a1c5422b07b60ee0cd9348..c2f0f1aabc345d0b78a7d28c10d3e68c
    gEfiPciIoProtocolGuid                       ## CONSUMES
    gBcm2712PciePlatformProtocolGuid            ## PRODUCES
  
-@@ -67,3 +70,4 @@
-   gEfiVariableArchProtocolGuid
-   AND gEfiVariableWriteArchProtocolGuid
-   AND gEfiAcpiSdtProtocolGuid
-+
 diff --git a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.uni b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.uni
-index 0d29271cc68b3c7e8d59efd9070c411e76a94ccd..c63a03c65c02a2c0426f9b6fe958f7f9a6c55966 100644
+index 0d29271cc68b3c7e8d59efd9070c411e76a94ccd..5d579f4accbcaa665fe10fa53adf93181d5f4f02 100644
 --- a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.uni
 +++ b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.uni
-@@ -86,3 +86,15 @@
+@@ -86,3 +86,14 @@
  #string STR_PCIE_LINK_SPEED_GEN1                           #language en-US "Gen 1 (2.5 GT/s)"
  #string STR_PCIE_LINK_SPEED_GEN2                           #language en-US "Gen 2 (5 GT/s)"
  #string STR_PCIE_LINK_SPEED_GEN3                           #language en-US "Gen 3 (8 GT/s)"
@@ -477,9 +449,8 @@ index 0d29271cc68b3c7e8d59efd9070c411e76a94ccd..c63a03c65c02a2c0426f9b6fe958f7f9
 +#string STR_FAN_SPEED_PROMPT                               #language en-US "Manual Speed (%)"
 +#string STR_FAN_SPEED_HELP                                 #language en-US "Force fan PWM from 0 to 100 percent in 5 percent steps."
 +#string STR_FAN_PERSISTENT_WARNING                         #language en-US "WARNING: Operating-system fan control and thermal protection are disabled. The selected speed remains fixed. Selecting 0% can cause overheating under load."
-+
 diff --git a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.vfr b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.vfr
-index 71b43219f0b292892cc2dc8e24b28b7bbea1279d..f2d473fca883fd830c6659b4dae4e0c5c1e9ea2d 100644
+index 71b43219f0b292892cc2dc8e24b28b7bbea1279d..091b4265057e70b44c1e5255c65bf910d1ba5085 100644
 --- a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.vfr
 +++ b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.vfr
 @@ -51,6 +51,16 @@ formset
@@ -540,16 +511,11 @@ index 71b43219f0b292892cc2dc8e24b28b7bbea1279d..f2d473fca883fd830c6659b4dae4e0c5
      endform;
  
      form formid = 0x1000,
-@@ -152,3 +196,4 @@ formset
-         endoneof;
-     endform;
- endformset;
-+
 diff --git a/Platform/RaspberryPi/RPi5/Include/RpiPlatformVarStoreData.h b/Platform/RaspberryPi/RPi5/Include/RpiPlatformVarStoreData.h
-index 5b9bad5cc63a56450edd17bc5ea8da563bf4f460..5f7145e122bbb52f1bfb6d3192e2391ce37d9127 100644
+index 5b9bad5cc63a56450edd17bc5ea8da563bf4f460..708328ac7022297829839abbb71cd281c6091abe 100644
 --- a/Platform/RaspberryPi/RPi5/Include/RpiPlatformVarStoreData.h
 +++ b/Platform/RaspberryPi/RPi5/Include/RpiPlatformVarStoreData.h
-@@ -32,4 +32,16 @@ typedef struct {
+@@ -32,4 +32,15 @@ typedef struct {
    UINT32 Value;
  } ACPI_PCIE_32_BIT_BAR_SPACE_SIZE_MB_VARSTORE_DATA;
  
@@ -565,7 +531,6 @@ index 5b9bad5cc63a56450edd17bc5ea8da563bf4f460..5f7145e122bbb52f1bfb6d3192e2391c
 +} FAN_SPEED_VARSTORE_DATA;
 +
  #endif // __RPI_PLATFORM_VARSTORE_DATA_H__
-+
 diff --git a/Platform/RaspberryPi/RPi5/RPi5.dsc b/Platform/RaspberryPi/RPi5/RPi5.dsc
 index 3aab6ea8abb414d79de8cbc16801e6b744e02506..876abd4dcba2cabb594f1a57ef91b995c2cfc4a8 100644
 --- a/Platform/RaspberryPi/RPi5/RPi5.dsc

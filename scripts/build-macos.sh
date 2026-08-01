@@ -31,6 +31,11 @@ fi
 export PATH="$ARM_GNU_TOOLCHAIN_BIN:$IASL_BIN:/usr/bin:/bin:/usr/sbin:/sbin"
 export CROSS_COMPILE="aarch64-none-elf-"
 
+if [[ ! -x "$source_dir/edk2/BaseTools/Source/C/bin/GenFv" ]]; then
+  make -C "$source_dir/edk2/BaseTools/Source/C" \
+    BUILD_OPTFLAGS='-O2 -Wno-macro-redefined'
+fi
+
 (cd "$source_dir" && ./build.sh)
 
 mkdir -p "$output_dir"

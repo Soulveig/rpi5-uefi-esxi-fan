@@ -6,6 +6,19 @@ All notable published changes are recorded here.
 
 - No firmware changes yet.
 
+## [0.1.1] - 2026-08-01
+
+### Added
+
+- complete pinned-source checkout and macOS build scripts;
+- separate macOS compatibility patch for the upstream root build script;
+- GitHub Actions checks for patch applicability, firmware checksum, shell syntax, accidental local-path or secret leakage, and release/tag consistency.
+
+### Verified
+
+- a clean-room checkout, direct dependency initialization, patch application, BaseTools C build, and complete firmware build on macOS;
+- the hardware-tested `RPI_EFI.fd` is unchanged from `v0.1.0` and retains SHA-256 `fe8b19fe7917df07952be0a40e176a4c6eaef238d0bc83206e43e870800bb8a0`.
+
 ## [0.1.0] - 2026-07-31
 
 ### Added
@@ -27,5 +40,6 @@ All notable published changes are recorded here.
 - Manual Persistent at 100% across ESXi startup;
 - sustained RX and TX through the separate experimental `RP1_GEM` ESXi driver on the published ACPI resource layout.
 
-[Unreleased]: https://github.com/Soulveig/rpi5-uefi-esxi-fan/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Soulveig/rpi5-uefi-esxi-fan/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/Soulveig/rpi5-uefi-esxi-fan/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/Soulveig/rpi5-uefi-esxi-fan/releases/tag/v0.1.0

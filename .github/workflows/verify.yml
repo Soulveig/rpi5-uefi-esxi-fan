@@ -1,0 +1,45 @@
+name: Verify release sources
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify scripts and firmware checksum
+        run: |
+          bash -n scripts/*.sh
+          sha256sum --check SHA256SUMS
+
+      - name: Check for accidental private data
+        run: |
+          if git grep -nE '(/Users/adm|10\.0\.1\.[0-9]+|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY|admin[[:space:]]*[/\\][[:space:]]*admin)' -- ':!*.jpg'; then
+            echo 'Accidental local path, credential, or private key marker found.' >&2
+            exit 1
+          fi
+
+      - name: Verify patches against pinned upstream commits
+        run: |
+          git clone --filter=blob:none --no-checkout https://github.com/NumberOneGit/edk2-platforms.git /tmp/edk2-platforms
+          git -C /tmp/edk2-platforms fetch --depth=1 origin 5654030569418c46e5a46066c495d4fad852b4f8
+          git -C /tmp/edk2-platforms checkout --detach FETCH_HEAD
+          git -C /tmp/edk2-platforms apply --check "$GITHUB_WORKSPACE/patches/0001-rpi5-esxi-acpi-waveshare-fan.patch"
+
+          git clone --filter=blob:none --no-checkout https://github.com/NumberOneGit/rpi5-uefi.git /tmp/rpi5-uefi
+          git -C /tmp/rpi5-uefi fetch --depth=1 origin ba315b63ffc778b633911416c0adedfc2a2763a7
+          git -C /tmp/rpi5-uefi checkout --detach FETCH_HEAD
+          git -C /tmp/rpi5-uefi apply --check "$GITHUB_WORKSPACE/patches/0002-macos-build-compatibility.patch"
+
+      - name: Verify changelog entry for tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          grep -Fq "## [$version]" CHANGELOG.md

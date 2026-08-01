@@ -7,7 +7,9 @@ ADD --checksum=sha256:6bac2a01979e210d9eac1d4d56747ec709ea60654744d66705dc3c36e7
     https://snapshot.ubuntu.com/ubuntu/20260801T000000Z/pool/main/c/ca-certificates/ca-certificates_20260601~24.04.1_all.deb \
     /tmp/ca-certificates.deb
 
-RUN dpkg -i /tmp/ca-certificates.deb \
+RUN dpkg-deb --extract /tmp/ca-certificates.deb / \
+    && mkdir -p /etc/ssl/certs \
+    && cat /usr/share/ca-certificates/mozilla/*.crt > /etc/ssl/certs/ca-certificates.crt \
     && rm /tmp/ca-certificates.deb \
     && printf '%s\n' \
       'deb [check-valid-until=no] https://snapshot.ubuntu.com/ubuntu/20260801T000000Z noble main restricted universe multiverse' \

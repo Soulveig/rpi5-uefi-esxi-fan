@@ -4,7 +4,12 @@ All notable published changes are recorded here.
 
 ## [Unreleased]
 
-- No changes yet.
+### Added (build-verified, hardware test pending)
+
+- live Cooling Fan telemetry refreshed every two seconds;
+- SoC temperature, requested PWM percentage and temperature-sensor status;
+- Automatic curve stage display, including explicit fail-safe 100% status;
+- volatile telemetry variables that do not write periodic updates to NVRAM.
 
 ## [0.1.3] - 2026-08-01
 

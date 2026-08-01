@@ -1,5 +1,5 @@
 diff --git a/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.c b/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.c
-index 5ad3c708b7a5db60a2caf6498c3443e29899c12d..f7a508aa36e1b55b190cee4a873627b1aeb749a6 100644
+index 5ad3c708..f7a508aa 100644
 --- a/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.c
 +++ b/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.c
 @@ -20,6 +20,10 @@
@@ -49,7 +49,7 @@ index 5ad3c708b7a5db60a2caf6498c3443e29899c12d..f7a508aa36e1b55b190cee4a873627b1
    Status = gBS->InstallConfigurationTable (&gFdtTableGuid, mFdtImage);
    if (EFI_ERROR (Status)) {
 diff --git a/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.inf b/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.inf
-index 1ea2fe40be1ee12b774135ead4be87a85f16f653..717cc88ab80570f83f0f970a43d79723dc0475e8 100644
+index 1ea2fe40..717cc88a 100644
 --- a/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.inf
 +++ b/Platform/RaspberryPi/Drivers/FdtDxe/FdtDxe.inf
 @@ -23,6 +23,7 @@
@@ -74,7 +74,7 @@ index 1ea2fe40be1ee12b774135ead4be87a85f16f653..717cc88ab80570f83f0f970a43d79723
  [Protocols]
    gRaspberryPiFirmwareProtocolGuid              ## CONSUMES
 diff --git a/Platform/RaspberryPi/Drivers/RpiFirmwareDxe/RpiFirmwareDxe.c b/Platform/RaspberryPi/Drivers/RpiFirmwareDxe/RpiFirmwareDxe.c
-index 64db6506b0d4bba8007392d9898e737e479f3b0a..594b22978f54b7d967d5a02a9a6ec6b02eda8e94 100644
+index 64db6506..594b2297 100644
 --- a/Platform/RaspberryPi/Drivers/RpiFirmwareDxe/RpiFirmwareDxe.c
 +++ b/Platform/RaspberryPi/Drivers/RpiFirmwareDxe/RpiFirmwareDxe.c
 @@ -1454,6 +1454,48 @@ RpiFirmwareSetRtc (
@@ -135,7 +135,7 @@ index 64db6506b0d4bba8007392d9898e737e479f3b0a..594b22978f54b7d967d5a02a9a6ec6b0
  
  STATIC
 diff --git a/Platform/RaspberryPi/Include/Protocol/RpiFirmware.h b/Platform/RaspberryPi/Include/Protocol/RpiFirmware.h
-index 92ab7f84cc85d2963baf230f4264e4847b0128fe..06e5600282345cdb3431e3eb3ca6e0ee1745c9ca 100644
+index 92ab7f84..06e56002 100644
 --- a/Platform/RaspberryPi/Include/Protocol/RpiFirmware.h
 +++ b/Platform/RaspberryPi/Include/Protocol/RpiFirmware.h
 @@ -167,6 +167,12 @@ EFI_STATUS
@@ -161,10 +161,10 @@ index 92ab7f84cc85d2963baf230f4264e4847b0128fe..06e5600282345cdb3431e3eb3ca6e0ee
  extern EFI_GUID gRaspberryPiFirmwareProtocolGuid;
 diff --git a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/FanControl.c b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/FanControl.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..4da4c1f5d96c234a103feff1b0e928e0ef7fb403
+index 00000000..7fd2427a
 --- /dev/null
 +++ b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/FanControl.c
-@@ -0,0 +1,192 @@
+@@ -0,0 +1,252 @@
 +/** @file
 + *  Raspberry Pi 5 RP1 PWM fan control.
 + *
@@ -186,6 +186,10 @@ index 0000000000000000000000000000000000000000..4da4c1f5d96c234a103feff1b0e928e0
 +
 +STATIC FAN_MODE_VARSTORE_DATA   mFanMode  = { FAN_MODE_AUTOMATIC };
 +STATIC FAN_SPEED_VARSTORE_DATA  mFanSpeed = { 100 };
++STATIC FAN_SENSOR_STATUS_VARSTORE_DATA  mFanSensorStatus = { FAN_SENSOR_NOT_READY };
++STATIC FAN_AUTO_STAGE_VARSTORE_DATA     mFanAutoStage = { FAN_AUTO_STAGE_INACTIVE };
++STATIC FAN_TEMPERATURE_VARSTORE_DATA    mFanTemperature = { 0 };
++STATIC FAN_CURRENT_SPEED_VARSTORE_DATA  mFanCurrentSpeed = { 0 };
 +STATIC RP1_BUS_PROTOCOL         *mRp1Bus;
 +STATIC RASPBERRY_PI_FIRMWARE_PROTOCOL *mFirmware;
 +STATIC EFI_EVENT               mFanTimer;
@@ -234,6 +238,48 @@ index 0000000000000000000000000000000000000000..4da4c1f5d96c234a103feff1b0e928e0
 +}
 +
 +STATIC
++UINT8
++AutomaticStage (
++  IN UINT8 Speed
++  )
++{
++  if (Speed >= 100) return FAN_AUTO_STAGE_100;
++  if (Speed >= 70) return FAN_AUTO_STAGE_70;
++  if (Speed >= 50) return FAN_AUTO_STAGE_50;
++  if (Speed >= 30) return FAN_AUTO_STAGE_30;
++  return FAN_AUTO_STAGE_OFF;
++}
++
++STATIC
++VOID
++SetTelemetryVariable (
++  IN CHAR16 *Name,
++  IN UINTN  Size,
++  IN VOID   *Value
++  )
++{
++  gRT->SetVariable (
++         Name,
++         &gRpiPlatformFormSetGuid,
++         EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS,
++         Size,
++         Value
++         );
++}
++
++STATIC
++VOID
++PublishFanTelemetry (
++  VOID
++  )
++{
++  SetTelemetryVariable (L"FanSensorStatus", sizeof (mFanSensorStatus), &mFanSensorStatus);
++  SetTelemetryVariable (L"FanAutoStage", sizeof (mFanAutoStage), &mFanAutoStage);
++  SetTelemetryVariable (L"FanTemperature", sizeof (mFanTemperature), &mFanTemperature);
++  SetTelemetryVariable (L"FanCurrentSpeed", sizeof (mFanCurrentSpeed), &mFanCurrentSpeed);
++}
++
++STATIC
 +VOID
 +EFIAPI
 +UpdateFan (
@@ -251,19 +297,32 @@ index 0000000000000000000000000000000000000000..4da4c1f5d96c234a103feff1b0e928e0
 +  Size = sizeof (mFanSpeed);
 +  gRT->GetVariable (L"FanSpeed", &gRpiPlatformFormSetGuid, NULL, &Size, &mFanSpeed);
 +
++  Status = mFirmware->GetTemperature (&Temperature);
++  if (EFI_ERROR (Status)) {
++    mFanSensorStatus.Value = FAN_SENSOR_ERROR;
++    mFanTemperature.Value = 0;
++  } else {
++    mFanSensorStatus.Value = FAN_SENSOR_OK;
++    mFanTemperature.Value = (UINT16)((Temperature + 500) / 1000);
++  }
++
 +  if ((mFanMode.Value == FAN_MODE_MANUAL) ||
 +      (mFanMode.Value == FAN_MODE_PERSISTENT)) {
 +    Speed = MIN (mFanSpeed.Value, 100);
++    mFanAutoStage.Value = FAN_AUTO_STAGE_INACTIVE;
 +  } else {
-+    Status = mFirmware->GetTemperature (&Temperature);
 +    if (EFI_ERROR (Status)) {
 +      Speed = 100; // Fail safe if the temperature cannot be read.
++      mFanAutoStage.Value = FAN_AUTO_STAGE_FAILSAFE;
 +    } else {
 +      Speed = AutomaticSpeed (Temperature);
 +      mAutoSpeed = Speed;
++      mFanAutoStage.Value = AutomaticStage (Speed);
 +    }
 +  }
 +  mRp1Bus->SetFanSpeed (mRp1Bus, Speed);
++  mFanCurrentSpeed.Value = Speed;
++  PublishFanTelemetry ();
 +}
 +
 +VOID
@@ -288,6 +347,7 @@ index 0000000000000000000000000000000000000000..4da4c1f5d96c234a103feff1b0e928e0
 +    mFanSpeed.Value = 100;
 +    gRT->SetVariable (L"FanSpeed", &gRpiPlatformFormSetGuid, Attributes, sizeof (mFanSpeed), &mFanSpeed);
 +  }
++  PublishFanTelemetry ();
 +}
 +
 +STATIC
@@ -359,7 +419,7 @@ index 0000000000000000000000000000000000000000..4da4c1f5d96c234a103feff1b0e928e0
 +}
 diff --git a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/FanControl.h b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/FanControl.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..c93275d0a96e123131d911d873502b12f59422b8
+index 00000000..c93275d0
 --- /dev/null
 +++ b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/FanControl.h
 @@ -0,0 +1,13 @@
@@ -377,7 +437,7 @@ index 0000000000000000000000000000000000000000..c93275d0a96e123131d911d873502b12
 +
 +#endif
 diff --git a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.c b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.c
-index dab20b8e619811b4123db65e25ffab6b435e6a02..a58b0333cac91dcaea4822102c8067ec31dc4f1b 100644
+index dab20b8e..a58b0333 100644
 --- a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.c
 +++ b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.c
 @@ -17,6 +17,7 @@
@@ -405,7 +465,7 @@ index dab20b8e619811b4123db65e25ffab6b435e6a02..a58b0333cac91dcaea4822102c8067ec
  
  EFI_STATUS
 diff --git a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.inf b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.inf
-index ca2f12d85465a1fdb5a1c5422b07b60ee0cd9348..fab06354bd51531d1e84c2f9abbca4df17441ded 100644
+index ca2f12d8..fab06354 100644
 --- a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.inf
 +++ b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxe.inf
 @@ -20,6 +20,7 @@
@@ -431,10 +491,10 @@ index ca2f12d85465a1fdb5a1c5422b07b60ee0cd9348..fab06354bd51531d1e84c2f9abbca4df
    gBcm2712PciePlatformProtocolGuid            ## PRODUCES
  
 diff --git a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.uni b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.uni
-index 0d29271cc68b3c7e8d59efd9070c411e76a94ccd..5d579f4accbcaa665fe10fa53adf93181d5f4f02 100644
+index 0d29271c..eebd963a 100644
 --- a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.uni
 +++ b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.uni
-@@ -86,3 +86,14 @@
+@@ -86,3 +86,33 @@
  #string STR_PCIE_LINK_SPEED_GEN1                           #language en-US "Gen 1 (2.5 GT/s)"
  #string STR_PCIE_LINK_SPEED_GEN2                           #language en-US "Gen 2 (5 GT/s)"
  #string STR_PCIE_LINK_SPEED_GEN3                           #language en-US "Gen 3 (8 GT/s)"
@@ -449,11 +509,30 @@ index 0d29271cc68b3c7e8d59efd9070c411e76a94ccd..5d579f4accbcaa665fe10fa53adf9318
 +#string STR_FAN_SPEED_PROMPT                               #language en-US "Manual Speed (%)"
 +#string STR_FAN_SPEED_HELP                                 #language en-US "Force fan PWM from 0 to 100 percent in 5 percent steps."
 +#string STR_FAN_PERSISTENT_WARNING                         #language en-US "WARNING: Operating-system fan control and thermal protection are disabled. The selected speed remains fixed. Selecting 0% can cause overheating under load."
++#string STR_FAN_TELEMETRY_SUBTITLE                         #language en-US "Live Status"
++#string STR_FAN_TEMPERATURE_PROMPT                         #language en-US "SoC Temperature (C)"
++#string STR_FAN_TEMPERATURE_HELP                           #language en-US "Current SoC temperature reported by Raspberry Pi firmware. Updated every two seconds."
++#string STR_FAN_CURRENT_SPEED_PROMPT                       #language en-US "Current PWM (%)"
++#string STR_FAN_CURRENT_SPEED_HELP                         #language en-US "PWM duty requested by UEFI. Updated every two seconds."
++#string STR_FAN_SENSOR_STATUS_PROMPT                       #language en-US "Temperature Sensor"
++#string STR_FAN_SENSOR_STATUS_HELP                         #language en-US "Sensor Error causes Automatic mode to use fail-safe 100 percent PWM."
++#string STR_FAN_SENSOR_NOT_READY                           #language en-US "Not Ready"
++#string STR_FAN_SENSOR_OK                                  #language en-US "OK"
++#string STR_FAN_SENSOR_ERROR                               #language en-US "Error - Fail-safe 100%"
++#string STR_FAN_AUTO_STAGE_PROMPT                          #language en-US "Automatic Stage"
++#string STR_FAN_AUTO_STAGE_HELP                            #language en-US "Current step of the automatic temperature curve."
++#string STR_FAN_STAGE_INACTIVE                             #language en-US "Inactive (Manual Mode)"
++#string STR_FAN_STAGE_OFF                                  #language en-US "Off (< 50 C)"
++#string STR_FAN_STAGE_30                                   #language en-US "Stage 1 - 30%"
++#string STR_FAN_STAGE_50                                   #language en-US "Stage 2 - 50%"
++#string STR_FAN_STAGE_70                                   #language en-US "Stage 3 - 70%"
++#string STR_FAN_STAGE_100                                  #language en-US "Stage 4 - 100%"
++#string STR_FAN_STAGE_FAILSAFE                             #language en-US "Fail-safe - 100%"
 diff --git a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.vfr b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.vfr
-index 71b43219f0b292892cc2dc8e24b28b7bbea1279d..091b4265057e70b44c1e5255c65bf910d1ba5085 100644
+index 71b43219..ca167f8b 100644
 --- a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.vfr
 +++ b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.vfr
-@@ -51,6 +51,16 @@ formset
+@@ -51,6 +51,36 @@ formset
        name  = Pcie1Settings,
        guid  = RPI_PLATFORM_FORMSET_GUID;
  
@@ -467,10 +546,30 @@ index 71b43219f0b292892cc2dc8e24b28b7bbea1279d..091b4265057e70b44c1e5255c65bf910
 +      name  = FanSpeed,
 +      guid  = RPI_PLATFORM_FORMSET_GUID;
 +
++    efivarstore FAN_SENSOR_STATUS_VARSTORE_DATA,
++      attribute = EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS,
++      name  = FanSensorStatus,
++      guid  = RPI_PLATFORM_FORMSET_GUID;
++
++    efivarstore FAN_AUTO_STAGE_VARSTORE_DATA,
++      attribute = EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS,
++      name  = FanAutoStage,
++      guid  = RPI_PLATFORM_FORMSET_GUID;
++
++    efivarstore FAN_TEMPERATURE_VARSTORE_DATA,
++      attribute = EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS,
++      name  = FanTemperature,
++      guid  = RPI_PLATFORM_FORMSET_GUID;
++
++    efivarstore FAN_CURRENT_SPEED_VARSTORE_DATA,
++      attribute = EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS,
++      name  = FanCurrentSpeed,
++      guid  = RPI_PLATFORM_FORMSET_GUID;
++
      form formid = 1,
        title  = STRING_TOKEN(STR_FORM_SET_TITLE);
  
-@@ -64,6 +74,40 @@ formset
+@@ -64,6 +94,87 @@ formset
        goto 0x1001,
          prompt = STRING_TOKEN(STR_PCIE_FORM_TITLE),
          help = STRING_TOKEN(STR_PCIE_FORM_HELP);
@@ -508,14 +607,61 @@ index 71b43219f0b292892cc2dc8e24b28b7bbea1279d..091b4265057e70b44c1e5255c65bf910
 +        suppressif (get(FanMode.Value) != FAN_MODE_PERSISTENT);
 +          subtitle text = STRING_TOKEN(STR_FAN_PERSISTENT_WARNING);
 +        endif;
++
++        subtitle text = STRING_TOKEN(STR_NULL_STRING);
++        subtitle text = STRING_TOKEN(STR_FAN_TELEMETRY_SUBTITLE);
++
++        numeric varid = FanTemperature.Value,
++          prompt  = STRING_TOKEN(STR_FAN_TEMPERATURE_PROMPT),
++          help    = STRING_TOKEN(STR_FAN_TEMPERATURE_HELP),
++          flags   = DISPLAY_UINT_DEC | NUMERIC_SIZE_2 | READ_ONLY,
++          minimum = 0,
++          maximum = 150,
++          step    = 0,
++          refresh interval = 2
++        endnumeric;
++
++        numeric varid = FanCurrentSpeed.Value,
++          prompt  = STRING_TOKEN(STR_FAN_CURRENT_SPEED_PROMPT),
++          help    = STRING_TOKEN(STR_FAN_CURRENT_SPEED_HELP),
++          flags   = DISPLAY_UINT_DEC | NUMERIC_SIZE_1 | READ_ONLY,
++          minimum = 0,
++          maximum = 100,
++          step    = 0,
++          refresh interval = 2
++        endnumeric;
++
++        oneof varid = FanSensorStatus.Value,
++          prompt      = STRING_TOKEN(STR_FAN_SENSOR_STATUS_PROMPT),
++          help        = STRING_TOKEN(STR_FAN_SENSOR_STATUS_HELP),
++          flags       = NUMERIC_SIZE_1 | READ_ONLY,
++          option text = STRING_TOKEN(STR_FAN_SENSOR_NOT_READY), value = FAN_SENSOR_NOT_READY, flags = 0;
++          option text = STRING_TOKEN(STR_FAN_SENSOR_OK), value = FAN_SENSOR_OK, flags = 0;
++          option text = STRING_TOKEN(STR_FAN_SENSOR_ERROR), value = FAN_SENSOR_ERROR, flags = 0;
++          refresh interval = 2
++        endoneof;
++
++        oneof varid = FanAutoStage.Value,
++          prompt      = STRING_TOKEN(STR_FAN_AUTO_STAGE_PROMPT),
++          help        = STRING_TOKEN(STR_FAN_AUTO_STAGE_HELP),
++          flags       = NUMERIC_SIZE_1 | READ_ONLY,
++          option text = STRING_TOKEN(STR_FAN_STAGE_INACTIVE), value = FAN_AUTO_STAGE_INACTIVE, flags = 0;
++          option text = STRING_TOKEN(STR_FAN_STAGE_OFF), value = FAN_AUTO_STAGE_OFF, flags = 0;
++          option text = STRING_TOKEN(STR_FAN_STAGE_30), value = FAN_AUTO_STAGE_30, flags = 0;
++          option text = STRING_TOKEN(STR_FAN_STAGE_50), value = FAN_AUTO_STAGE_50, flags = 0;
++          option text = STRING_TOKEN(STR_FAN_STAGE_70), value = FAN_AUTO_STAGE_70, flags = 0;
++          option text = STRING_TOKEN(STR_FAN_STAGE_100), value = FAN_AUTO_STAGE_100, flags = 0;
++          option text = STRING_TOKEN(STR_FAN_STAGE_FAILSAFE), value = FAN_AUTO_STAGE_FAILSAFE, flags = 0;
++          refresh interval = 2
++        endoneof;
      endform;
  
      form formid = 0x1000,
 diff --git a/Platform/RaspberryPi/RPi5/Include/RpiPlatformVarStoreData.h b/Platform/RaspberryPi/RPi5/Include/RpiPlatformVarStoreData.h
-index 5b9bad5cc63a56450edd17bc5ea8da563bf4f460..708328ac7022297829839abbb71cd281c6091abe 100644
+index 5b9bad5c..3d42be30 100644
 --- a/Platform/RaspberryPi/RPi5/Include/RpiPlatformVarStoreData.h
 +++ b/Platform/RaspberryPi/RPi5/Include/RpiPlatformVarStoreData.h
-@@ -32,4 +32,15 @@ typedef struct {
+@@ -32,4 +32,41 @@ typedef struct {
    UINT32 Value;
  } ACPI_PCIE_32_BIT_BAR_SPACE_SIZE_MB_VARSTORE_DATA;
  
@@ -530,9 +676,35 @@ index 5b9bad5cc63a56450edd17bc5ea8da563bf4f460..708328ac7022297829839abbb71cd281
 +  UINT8 Value;
 +} FAN_SPEED_VARSTORE_DATA;
 +
++#define FAN_SENSOR_NOT_READY  0
++#define FAN_SENSOR_OK         1
++#define FAN_SENSOR_ERROR      2
++typedef struct {
++  UINT8 Value;
++} FAN_SENSOR_STATUS_VARSTORE_DATA;
++
++#define FAN_AUTO_STAGE_INACTIVE  0
++#define FAN_AUTO_STAGE_OFF       1
++#define FAN_AUTO_STAGE_30        2
++#define FAN_AUTO_STAGE_50        3
++#define FAN_AUTO_STAGE_70        4
++#define FAN_AUTO_STAGE_100       5
++#define FAN_AUTO_STAGE_FAILSAFE  6
++typedef struct {
++  UINT8 Value;
++} FAN_AUTO_STAGE_VARSTORE_DATA;
++
++typedef struct {
++  UINT16 Value;
++} FAN_TEMPERATURE_VARSTORE_DATA;
++
++typedef struct {
++  UINT8 Value;
++} FAN_CURRENT_SPEED_VARSTORE_DATA;
++
  #endif // __RPI_PLATFORM_VARSTORE_DATA_H__
 diff --git a/Platform/RaspberryPi/RPi5/RPi5.dsc b/Platform/RaspberryPi/RPi5/RPi5.dsc
-index 3aab6ea8abb414d79de8cbc16801e6b744e02506..876abd4dcba2cabb594f1a57ef91b995c2cfc4a8 100644
+index 3aab6ea8..876abd4d 100644
 --- a/Platform/RaspberryPi/RPi5/RPi5.dsc
 +++ b/Platform/RaspberryPi/RPi5/RPi5.dsc
 @@ -266,11 +266,11 @@
@@ -550,7 +722,7 @@ index 3aab6ea8abb414d79de8cbc16801e6b744e02506..876abd4dcba2cabb594f1a57ef91b995
  
  [BuildOptions.common.EDKII.DXE_RUNTIME_DRIVER]
 diff --git a/Silicon/RaspberryPi/RpiSiliconPkg/Drivers/Rp1BusDxe/Rp1BusDxe.c b/Silicon/RaspberryPi/RpiSiliconPkg/Drivers/Rp1BusDxe/Rp1BusDxe.c
-index aed8ae81d956b3e099fc498dc05e6e3cec62bb6c..26a5b87b3d8dba0db848b4798268a8b6ff6cc143 100644
+index aed8ae81..26a5b87b 100644
 --- a/Silicon/RaspberryPi/RpiSiliconPkg/Drivers/Rp1BusDxe/Rp1BusDxe.c
 +++ b/Silicon/RaspberryPi/RpiSiliconPkg/Drivers/Rp1BusDxe/Rp1BusDxe.c
 @@ -12,12 +12,199 @@
@@ -856,7 +1028,7 @@ index aed8ae81d956b3e099fc498dc05e6e3cec62bb6c..26a5b87b3d8dba0db848b4798268a8b6
  
    return EFI_SUCCESS;
 diff --git a/Silicon/RaspberryPi/RpiSiliconPkg/Drivers/Rp1BusDxe/Rp1BusDxe.inf b/Silicon/RaspberryPi/RpiSiliconPkg/Drivers/Rp1BusDxe/Rp1BusDxe.inf
-index 671ec77fa7121119c56f5f538b6e1acd72b547b6..acc8a521cce4a5e865a1e4caa78260e98edc1143 100644
+index 671ec77f..acc8a521 100644
 --- a/Silicon/RaspberryPi/RpiSiliconPkg/Drivers/Rp1BusDxe/Rp1BusDxe.inf
 +++ b/Silicon/RaspberryPi/RpiSiliconPkg/Drivers/Rp1BusDxe/Rp1BusDxe.inf
 @@ -28,6 +28,7 @@
@@ -868,7 +1040,7 @@ index 671ec77fa7121119c56f5f538b6e1acd72b547b6..acc8a521cce4a5e865a1e4caa78260e9
    UefiDriverEntryPoint
    UefiLib
 diff --git a/Silicon/RaspberryPi/RpiSiliconPkg/Include/Protocol/Rp1Bus.h b/Silicon/RaspberryPi/RpiSiliconPkg/Include/Protocol/Rp1Bus.h
-index 4ae879b810cdf73c595a7969d90d713ca587f506..d4e2e3428eeae767f69e2e40f79d0d84b03ba97c 100644
+index 4ae879b8..d4e2e342 100644
 --- a/Silicon/RaspberryPi/RpiSiliconPkg/Include/Protocol/Rp1Bus.h
 +++ b/Silicon/RaspberryPi/RpiSiliconPkg/Include/Protocol/Rp1Bus.h
 @@ -20,8 +20,23 @@ EFI_PHYSICAL_ADDRESS
@@ -896,7 +1068,7 @@ index 4ae879b810cdf73c595a7969d90d713ca587f506..d4e2e3428eeae767f69e2e40f79d0d84
  
  extern EFI_GUID  gRp1BusProtocolGuid;
 diff --git a/Silicon/RaspberryPi/RpiSiliconPkg/Include/Rp1.asi b/Silicon/RaspberryPi/RpiSiliconPkg/Include/Rp1.asi
-index 9de562ba3f4ef3e8b2331b79d8f05cab648153c2..3b8560af61a25454e01a9066dd9bb27f05ea5b22 100644
+index 9de562ba..3b8560af 100644
 --- a/Silicon/RaspberryPi/RpiSiliconPkg/Include/Rp1.asi
 +++ b/Silicon/RaspberryPi/RpiSiliconPkg/Include/Rp1.asi
 @@ -58,3 +58,59 @@ Device (XHC1) {
@@ -960,7 +1132,7 @@ index 9de562ba3f4ef3e8b2331b79d8f05cab648153c2..3b8560af61a25454e01a9066dd9bb27f
 +  }
 +}
 diff --git a/Silicon/RaspberryPi/RpiSiliconPkg/Include/Rp1.h b/Silicon/RaspberryPi/RpiSiliconPkg/Include/Rp1.h
-index d136c518bb7272c38ac4d86c4f64070d2a16ed6d..3358ad0f9539285d7b09734805f8a265e6c2d48f 100644
+index d136c518..3358ad0f 100644
 --- a/Silicon/RaspberryPi/RpiSiliconPkg/Include/Rp1.h
 +++ b/Silicon/RaspberryPi/RpiSiliconPkg/Include/Rp1.h
 @@ -27,6 +27,14 @@

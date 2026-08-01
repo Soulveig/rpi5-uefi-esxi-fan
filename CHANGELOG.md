@@ -6,13 +6,14 @@ All notable published changes are recorded here.
 
 ### Added (build-verified, hardware test pending)
 
-- live Cooling Fan telemetry refreshed every two seconds;
+- Cooling Fan status telemetry, refreshed when the page is reopened;
 - SoC temperature, requested PWM percentage and temperature-sensor status;
 - Automatic curve stage display, including explicit fail-safe 100% status;
 - volatile telemetry variables that do not write periodic updates to NVRAM.
 
 ### Changed
 
+- disabled automatic HII form refresh after hardware testing showed severe keyboard latency;
 - removed GitHub and container firmware builds; releases now publish only the locally built artifact that is explicitly selected after hardware testing;
 - retained checksum, patch applicability, documentation, SBOM and attestation checks.
 

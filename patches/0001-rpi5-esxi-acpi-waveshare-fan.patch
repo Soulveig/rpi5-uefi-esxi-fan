@@ -491,7 +491,7 @@ index ca2f12d8..fab06354 100644
    gBcm2712PciePlatformProtocolGuid            ## PRODUCES
  
 diff --git a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.uni b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.uni
-index 0d29271c..eebd963a 100644
+index 0d29271c..0840d440 100644
 --- a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.uni
 +++ b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.uni
 @@ -86,3 +86,33 @@
@@ -509,11 +509,11 @@ index 0d29271c..eebd963a 100644
 +#string STR_FAN_SPEED_PROMPT                               #language en-US "Manual Speed (%)"
 +#string STR_FAN_SPEED_HELP                                 #language en-US "Force fan PWM from 0 to 100 percent in 5 percent steps."
 +#string STR_FAN_PERSISTENT_WARNING                         #language en-US "WARNING: Operating-system fan control and thermal protection are disabled. The selected speed remains fixed. Selecting 0% can cause overheating under load."
-+#string STR_FAN_TELEMETRY_SUBTITLE                         #language en-US "Live Status"
++#string STR_FAN_TELEMETRY_SUBTITLE                         #language en-US "Current Status"
 +#string STR_FAN_TEMPERATURE_PROMPT                         #language en-US "SoC Temperature (C)"
-+#string STR_FAN_TEMPERATURE_HELP                           #language en-US "Current SoC temperature reported by Raspberry Pi firmware. Updated every two seconds."
++#string STR_FAN_TEMPERATURE_HELP                           #language en-US "Current SoC temperature reported by Raspberry Pi firmware. Re-enter this page to refresh the displayed value."
 +#string STR_FAN_CURRENT_SPEED_PROMPT                       #language en-US "Current PWM (%)"
-+#string STR_FAN_CURRENT_SPEED_HELP                         #language en-US "PWM duty requested by UEFI. Updated every two seconds."
++#string STR_FAN_CURRENT_SPEED_HELP                         #language en-US "PWM duty requested by UEFI. Re-enter this page to refresh the displayed value."
 +#string STR_FAN_SENSOR_STATUS_PROMPT                       #language en-US "Temperature Sensor"
 +#string STR_FAN_SENSOR_STATUS_HELP                         #language en-US "Sensor Error causes Automatic mode to use fail-safe 100 percent PWM."
 +#string STR_FAN_SENSOR_NOT_READY                           #language en-US "Not Ready"
@@ -529,7 +529,7 @@ index 0d29271c..eebd963a 100644
 +#string STR_FAN_STAGE_100                                  #language en-US "Stage 4 - 100%"
 +#string STR_FAN_STAGE_FAILSAFE                             #language en-US "Fail-safe - 100%"
 diff --git a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.vfr b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.vfr
-index 71b43219..ca167f8b 100644
+index 71b43219..8161cbeb 100644
 --- a/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.vfr
 +++ b/Platform/RaspberryPi/RPi5/Drivers/RpiPlatformDxe/RpiPlatformDxeHii.vfr
 @@ -51,6 +51,36 @@ formset
@@ -569,7 +569,7 @@ index 71b43219..ca167f8b 100644
      form formid = 1,
        title  = STRING_TOKEN(STR_FORM_SET_TITLE);
  
-@@ -64,6 +94,87 @@ formset
+@@ -64,6 +94,83 @@ formset
        goto 0x1001,
          prompt = STRING_TOKEN(STR_PCIE_FORM_TITLE),
          help = STRING_TOKEN(STR_PCIE_FORM_HELP);
@@ -618,7 +618,6 @@ index 71b43219..ca167f8b 100644
 +          minimum = 0,
 +          maximum = 150,
 +          step    = 0,
-+          refresh interval = 2
 +        endnumeric;
 +
 +        numeric varid = FanCurrentSpeed.Value,
@@ -628,7 +627,6 @@ index 71b43219..ca167f8b 100644
 +          minimum = 0,
 +          maximum = 100,
 +          step    = 0,
-+          refresh interval = 2
 +        endnumeric;
 +
 +        oneof varid = FanSensorStatus.Value,
@@ -638,7 +636,6 @@ index 71b43219..ca167f8b 100644
 +          option text = STRING_TOKEN(STR_FAN_SENSOR_NOT_READY), value = FAN_SENSOR_NOT_READY, flags = 0;
 +          option text = STRING_TOKEN(STR_FAN_SENSOR_OK), value = FAN_SENSOR_OK, flags = 0;
 +          option text = STRING_TOKEN(STR_FAN_SENSOR_ERROR), value = FAN_SENSOR_ERROR, flags = 0;
-+          refresh interval = 2
 +        endoneof;
 +
 +        oneof varid = FanAutoStage.Value,
@@ -652,7 +649,6 @@ index 71b43219..ca167f8b 100644
 +          option text = STRING_TOKEN(STR_FAN_STAGE_70), value = FAN_AUTO_STAGE_70, flags = 0;
 +          option text = STRING_TOKEN(STR_FAN_STAGE_100), value = FAN_AUTO_STAGE_100, flags = 0;
 +          option text = STRING_TOKEN(STR_FAN_STAGE_FAILSAFE), value = FAN_AUTO_STAGE_FAILSAFE, flags = 0;
-+          refresh interval = 2
 +        endoneof;
      endform;
  

@@ -4,11 +4,24 @@ All notable published changes are recorded here.
 
 ## [Unreleased]
 
-- added a repository-level BSD-2-Clause-Patent license for original project material;
-- pinned the GitHub checkout action to an immutable commit;
-- added local Markdown-link and required-artifact validation;
-- added automatic GitHub Release publication for verified version tags;
-- enabled protected-main workflow requirements.
+- No changes yet.
+
+## [0.1.2] - 2026-08-01
+
+### Added
+
+- repository-level BSD-2-Clause-Patent license and security policy;
+- pinned container build using Arm GNU Toolchain 12.3.Rel1 with verified download checksum;
+- source-patch policy, SPDX SBOM, documentation and required-artifact checks;
+- signed GitHub artifact attestations and automatic tagged releases;
+- explicit `RPI_EFI-RPi5-nonD0.fd` release naming and a no-unverified-D0 policy;
+- protected `main` requirements and immutable GitHub Action references.
+
+### Verified
+
+- existing hardware-tested firmware remains byte-for-byte unchanged;
+- clean macOS source checkout and build;
+- GitHub verification workflow and container build workflow.
 
 ## [0.1.1] - 2026-08-01
 
@@ -44,6 +57,7 @@ All notable published changes are recorded here.
 - Manual Persistent at 100% across ESXi startup;
 - sustained RX and TX through the separate experimental `RP1_GEM` ESXi driver on the published ACPI resource layout.
 
-[Unreleased]: https://github.com/Soulveig/rpi5-uefi-esxi-fan/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/Soulveig/rpi5-uefi-esxi-fan/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/Soulveig/rpi5-uefi-esxi-fan/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/Soulveig/rpi5-uefi-esxi-fan/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/Soulveig/rpi5-uefi-esxi-fan/releases/tag/v0.1.0

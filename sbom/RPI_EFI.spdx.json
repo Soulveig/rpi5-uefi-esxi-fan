@@ -1,0 +1,27 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "RPI_EFI-RPi5-nonD0",
+  "documentNamespace": "https://github.com/Soulveig/rpi5-uefi-esxi-fan/sbom/v0.1.2",
+  "creationInfo": {
+    "created": "2026-08-01T00:00:00Z",
+    "creators": ["Tool: rpi5-uefi-esxi-fan-release-metadata"]
+  },
+  "packages": [
+    {"name":"RPI_EFI-RPi5-nonD0","SPDXID":"SPDXRef-Firmware","versionInfo":"0.1.2","downloadLocation":"NOASSERTION","filesAnalyzed":false,"checksums":[{"algorithm":"SHA256","checksumValue":"fe8b19fe7917df07952be0a40e176a4c6eaef238d0bc83206e43e870800bb8a0"}],"licenseConcluded":"NOASSERTION","licenseDeclared":"NOASSERTION","copyrightText":"NOASSERTION"},
+    {"name":"NumberOneGit/rpi5-uefi","SPDXID":"SPDXRef-Rpi5Uefi","versionInfo":"ba315b63ffc778b633911416c0adedfc2a2763a7","downloadLocation":"https://github.com/NumberOneGit/rpi5-uefi","filesAnalyzed":false,"licenseConcluded":"NOASSERTION","licenseDeclared":"NOASSERTION","copyrightText":"NOASSERTION"},
+    {"name":"worproject/arm-trusted-firmware","SPDXID":"SPDXRef-ATF","versionInfo":"682607fbd775e37fb5631508434dab9e60220c9a","downloadLocation":"https://github.com/worproject/arm-trusted-firmware","filesAnalyzed":false,"licenseConcluded":"BSD-3-Clause","licenseDeclared":"BSD-3-Clause","copyrightText":"NOASSERTION"},
+    {"name":"Marcinoo97/edk2","SPDXID":"SPDXRef-Edk2","versionInfo":"118e09ed80f4d9ec9966c3d1ac9f5ec7c9f99880","downloadLocation":"https://github.com/Marcinoo97/edk2","filesAnalyzed":false,"licenseConcluded":"BSD-2-Clause-Patent","licenseDeclared":"BSD-2-Clause-Patent","copyrightText":"NOASSERTION"},
+    {"name":"NumberOneGit/edk2-platforms","SPDXID":"SPDXRef-Edk2Platforms","versionInfo":"5654030569418c46e5a46066c495d4fad852b4f8","downloadLocation":"https://github.com/NumberOneGit/edk2-platforms","filesAnalyzed":false,"licenseConcluded":"BSD-2-Clause-Patent","licenseDeclared":"BSD-2-Clause-Patent","copyrightText":"NOASSERTION"},
+    {"name":"tianocore/edk2-non-osi","SPDXID":"SPDXRef-Edk2NonOsi","versionInfo":"1f4d7849f2344aa770f4de5224188654ae5b0e50","downloadLocation":"https://github.com/tianocore/edk2-non-osi","filesAnalyzed":false,"licenseConcluded":"NOASSERTION","licenseDeclared":"NOASSERTION","copyrightText":"NOASSERTION"}
+  ],
+  "relationships": [
+    {"spdxElementId":"SPDXRef-DOCUMENT","relationshipType":"DESCRIBES","relatedSpdxElement":"SPDXRef-Firmware"},
+    {"spdxElementId":"SPDXRef-Firmware","relationshipType":"GENERATED_FROM","relatedSpdxElement":"SPDXRef-Rpi5Uefi"},
+    {"spdxElementId":"SPDXRef-Firmware","relationshipType":"GENERATED_FROM","relatedSpdxElement":"SPDXRef-ATF"},
+    {"spdxElementId":"SPDXRef-Firmware","relationshipType":"GENERATED_FROM","relatedSpdxElement":"SPDXRef-Edk2"},
+    {"spdxElementId":"SPDXRef-Firmware","relationshipType":"GENERATED_FROM","relatedSpdxElement":"SPDXRef-Edk2Platforms"},
+    {"spdxElementId":"SPDXRef-Firmware","relationshipType":"GENERATED_FROM","relatedSpdxElement":"SPDXRef-Edk2NonOsi"}
+  ]
+}

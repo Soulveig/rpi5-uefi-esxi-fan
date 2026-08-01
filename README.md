@@ -21,7 +21,9 @@
 
 Experimental UEFI build for Raspberry Pi 5, tested with VMware ESXi Arm and a Waveshare PoE HAT (F) Rev1.2 with one three-wire fan.
 
-Ready-to-use image: [`firmware/RPI_EFI.fd`](firmware/RPI_EFI.fd)
+Ready-to-use image: [`firmware/RPI_EFI.fd`](firmware/RPI_EFI.fd), explicitly published in releases as `RPI_EFI-RPi5-nonD0.fd`.
+
+No D0 image is currently published. A D0-labelled artifact will be added only after a separate build and hardware boot test.
 
 ### Validation status
 
@@ -106,6 +108,9 @@ Always keep a known-good rollback image. This is an experimental build and shoul
 - [`patches/0002-macos-build-compatibility.patch`](patches/0002-macos-build-compatibility.patch) makes the pinned root build script compatible with macOS and prebuilt BaseTools.
 - [`scripts/checkout-source.sh`](scripts/checkout-source.sh) prepares the pinned source tree and applies the patch.
 - [`scripts/build-macos.sh`](scripts/build-macos.sh) checks the compiler and runs the macOS build.
+- [`Dockerfile`](Dockerfile) and [`scripts/build-container.sh`](scripts/build-container.sh) provide a pinned Linux build environment.
+- [`sbom/RPI_EFI.spdx.json`](sbom/RPI_EFI.spdx.json) records the firmware components and pinned source revisions.
+- [`SECURITY.md`](SECURITY.md) documents vulnerability reporting and operational risks.
 - [`CHANGELOG.md`](CHANGELOG.md) records published firmware changes.
 
 Hardware results can be submitted with the [hardware test report template](https://github.com/Soulveig/rpi5-uefi-esxi-fan/issues/new?template=hardware-test-report.md).
@@ -132,7 +137,9 @@ The original scripts, patches and documentation in this repository are licensed 
 
 Экспериментальная сборка UEFI для Raspberry Pi 5, проверенная с VMware ESXi Arm и Waveshare PoE HAT (F) Rev1.2 с одним трёхпроводным вентилятором.
 
-Готовый образ: [`firmware/RPI_EFI.fd`](firmware/RPI_EFI.fd)
+Готовый образ: [`firmware/RPI_EFI.fd`](firmware/RPI_EFI.fd); в релизах он также публикуется под явным именем `RPI_EFI-RPi5-nonD0.fd`.
+
+Образ D0 пока не публикуется. Файл с маркировкой D0 будет добавлен только после отдельной сборки и аппаратной проверки загрузки.
 
 ### Статус проверки
 
@@ -217,6 +224,9 @@ The original scripts, patches and documentation in this repository are licensed 
 - [`patches/0002-macos-build-compatibility.patch`](patches/0002-macos-build-compatibility.patch) адаптирует корневой скрипт зафиксированной версии к macOS и заранее собранным BaseTools.
 - [`scripts/checkout-source.sh`](scripts/checkout-source.sh) подготавливает исходное дерево и применяет патч.
 - [`scripts/build-macos.sh`](scripts/build-macos.sh) проверяет компилятор и запускает сборку на macOS.
+- [`Dockerfile`](Dockerfile) и [`scripts/build-container.sh`](scripts/build-container.sh) задают зафиксированную Linux-среду сборки.
+- [`sbom/RPI_EFI.spdx.json`](sbom/RPI_EFI.spdx.json) содержит состав прошивки и версии исходников.
+- [`SECURITY.md`](SECURITY.md) описывает передачу сведений об уязвимостях и эксплуатационные риски.
 - [`CHANGELOG.md`](CHANGELOG.md) содержит историю опубликованных изменений.
 
 Результаты аппаратной проверки можно отправить через [шаблон отчёта](https://github.com/Soulveig/rpi5-uefi-esxi-fan/issues/new?template=hardware-test-report.md).

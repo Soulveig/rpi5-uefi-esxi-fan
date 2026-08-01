@@ -13,6 +13,7 @@ All notable published changes are recorded here.
 
 ### Changed
 
+- standardized the repository and release asset name as the directly bootable `RPI_EFI.fd`;
 - simplified the repository to ready-to-use firmware and documentation; local experimental builds are published only after hardware validation;
 - disabled automatic HII form refresh after hardware testing showed severe keyboard latency;
 
@@ -31,7 +32,7 @@ All notable published changes are recorded here.
 - pinned container build using Arm GNU Toolchain 12.3.Rel1 with verified download checksum;
 - source-patch policy, SPDX SBOM, documentation and required-artifact checks;
 - signed GitHub artifact attestations and automatic tagged releases;
-- explicit `RPI_EFI-RPi5-nonD0.fd` release naming and a no-unverified-D0 policy;
+- a no-unverified-D0 publication policy;
 - protected `main` requirements and immutable GitHub Action references.
 
 ### Verified

@@ -1,6 +1,6 @@
 # Raspberry Pi 5 UEFI: ESXi network ACPI + Waveshare PoE HAT (F) Rev1.2 + Fan Control
 
-[English](#english) | [Русский](#русский) | [Releases](https://github.com/Soulveig/rpi5-uefi-esxi-fan/releases) | [Changelog](CHANGELOG.md)
+[English](#english) | [Русский](#русский) | [Releases](https://github.com/Soulveig/rpi5-uefi-esxi-fan/releases)
 
 ## Screenshots / Скриншоты
 
@@ -103,7 +103,7 @@ Always keep a known-good rollback image. This is an experimental build and shoul
 
 ### Releases
 
-Only hardware-tested firmware is published in [GitHub Releases](https://github.com/Soulveig/rpi5-uefi-esxi-fan/releases). Experimental images are tested locally first and are not uploaded to GitHub. [`CHANGELOG.md`](CHANGELOG.md) records published firmware changes.
+Only hardware-tested firmware is published in [GitHub Releases](https://github.com/Soulveig/rpi5-uefi-esxi-fan/releases). Experimental images are tested locally first and are not uploaded to GitHub.
 
 ### Upstream base
 
@@ -209,7 +209,7 @@ The original documentation in this repository is licensed under [`BSD-2-Clause-P
 
 ### Релизы
 
-В [GitHub Releases](https://github.com/Soulveig/rpi5-uefi-esxi-fan/releases) публикуются только прошедшие аппаратную проверку прошивки. Экспериментальные образы сначала проверяются локально и не загружаются на GitHub. История опубликованных версий находится в [`CHANGELOG.md`](CHANGELOG.md).
+В [GitHub Releases](https://github.com/Soulveig/rpi5-uefi-esxi-fan/releases) публикуются только прошедшие аппаратную проверку прошивки. Экспериментальные образы сначала проверяются локально и не загружаются на GitHub.
 
 ### Исходная основа
 

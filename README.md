@@ -1,6 +1,6 @@
 # Raspberry Pi 5 UEFI: ESXi network ACPI + Waveshare PoE HAT (F) Rev1.2 + Fan Control
 
-[English](#english) | [Русский](#русский)
+[English](#english) | [Русский](#русский) | [Build instructions](BUILD.md) | [Source patch](patches/0001-rpi5-esxi-acpi-waveshare-fan.patch) | [Changelog](CHANGELOG.md)
 
 ## Screenshots / Скриншоты
 
@@ -23,6 +23,21 @@ Experimental UEFI build for Raspberry Pi 5, tested with VMware ESXi Arm and a Wa
 
 Ready-to-use image: [`firmware/RPI_EFI.fd`](firmware/RPI_EFI.fd)
 
+### Validation status
+
+| Capability | Status | Scope |
+|---|---|---|
+| UEFI boot | **Verified** | Raspberry Pi 5, non-D0 |
+| Keyboard and boot-disk operation | **Verified** | Tested UEFI/ESXi boot media |
+| ESXi Arm boot | **Verified** | ESXi Arm 8.0U3c build 24449057 |
+| Automatic fan control | **Verified** | Waveshare PoE HAT (F) Rev1.2 |
+| Manual fan speeds | **Verified** | Distinguishable PWM speed levels |
+| Manual Persistent at 100% | **Verified** | Fan remains active after ESXi startup |
+| RP1 Ethernet ACPI resources | **Verified** | `RPI0001` GEM plus separate `RPI0002` GPIO diagnostics |
+| Sustained RX and TX | **Verified** | Separate experimental `RP1_GEM` ESXi driver on this ACPI layout |
+
+The firmware exposes the hardware resources required by the ESXi driver. Packet processing itself is implemented by the separate experimental ESXi driver, not by UEFI.
+
 ### Improvements
 
 #### Network
@@ -32,15 +47,23 @@ Ready-to-use image: [`firmware/RPI_EFI.fd`](firmware/RPI_EFI.fd)
 - exposes the diagnostic GPIO range as a separate `RPI0002` device, with an `RP1_IO_BANK0_BASE` range of `0x30000` bytes;
 - keeps the fan implementation isolated from Ethernet: it does not modify Ethernet ACPI, Ethernet clocks, GPIO32, GEM, or PHY logic.
 
-This is a foundation for the experimental RP1 Ethernet driver for ESXi, not a complete universal UEFI network driver. ESXi boot has been verified; this release does not claim continuous RX/TX operation.
+This is the ACPI foundation used by the experimental RP1 Ethernet driver for ESXi, not a universal UEFI network driver. Sustained RX and TX were verified with the separate `RP1_GEM` ESXi driver; that result is specific to the tested firmware, driver and host configuration.
 
 #### Fan control
 
 Three modes are available in the platform settings menu:
 
+`Device Manager → Raspberry Pi Configuration → Cooling Fan`
+
 - **Automatic** — automatic fan curve based on SoC temperature;
 - **Manual (0–100%)** — the selected speed remains active until control is handed over to the operating system;
 - **Manual Persistent (0–100%)** — UEFI leaves the last programmed PWM state active after the operating system starts.
+
+| Mode | While UEFI is running | At `ExitBootServices` | After OS startup |
+|---|---|---|---|
+| Automatic | UEFI follows the SoC temperature curve | Timer stops; saved hardware state is restored | The OS driver may take control |
+| Manual | UEFI forces the selected speed | Saved hardware state is restored | The OS driver may take control |
+| Manual Persistent | UEFI forces the selected speed | The programmed PWM state is retained | Fixed speed remains until another driver or reset changes it |
 
 Automatic fan curve:
 
@@ -76,6 +99,16 @@ In Automatic and standard Manual modes, the firmware restores the saved PWM1 clo
 
 Always keep a known-good rollback image. This is an experimental build and should not be installed without physical access to the Raspberry Pi.
 
+### Source and reproducible build
+
+- [`BUILD.md`](BUILD.md) documents the pinned source revisions, GCC 12.3.1 environment and build process.
+- [`patches/0001-rpi5-esxi-acpi-waveshare-fan.patch`](patches/0001-rpi5-esxi-acpi-waveshare-fan.patch) contains the UEFI source changes and applies to the pinned `edk2-platforms` commit.
+- [`scripts/checkout-source.sh`](scripts/checkout-source.sh) prepares the pinned source tree and applies the patch.
+- [`scripts/build-macos.sh`](scripts/build-macos.sh) checks the compiler and runs the macOS build.
+- [`CHANGELOG.md`](CHANGELOG.md) records published firmware changes.
+
+Hardware results can be submitted with the [hardware test report template](https://github.com/Soulveig/rpi5-uefi-esxi-fan/issues/new?template=hardware-test-report.md).
+
 ### Upstream base
 
 The build is based on the following branches and pinned commits:
@@ -90,7 +123,7 @@ Compiler used for the tested build: Arm GNU Toolchain GCC 12.3.1 for macOS.
 
 ### Licenses
 
-The firmware combines components from multiple upstream projects. Their original licenses remain applicable; see [`UPSTREAM.md`](UPSTREAM.md). This repository does not replace or override the licenses of the firmware components.
+The firmware combines components from multiple upstream projects. Their original licenses remain applicable; see [`UPSTREAM.md`](UPSTREAM.md) and [`LICENSES/`](LICENSES/). This repository does not replace or override the licenses of the firmware components.
 
 ---
 
@@ -99,6 +132,21 @@ The firmware combines components from multiple upstream projects. Their original
 Экспериментальная сборка UEFI для Raspberry Pi 5, проверенная с VMware ESXi Arm и Waveshare PoE HAT (F) Rev1.2 с одним трёхпроводным вентилятором.
 
 Готовый образ: [`firmware/RPI_EFI.fd`](firmware/RPI_EFI.fd)
+
+### Статус проверки
+
+| Возможность | Статус | Область проверки |
+|---|---|---|
+| Загрузка UEFI | **Проверено** | Raspberry Pi 5, не D0 |
+| Клавиатура и загрузочный диск | **Проверено** | Проверенный носитель UEFI/ESXi |
+| Загрузка ESXi Arm | **Проверено** | ESXi Arm 8.0U3c build 24449057 |
+| Автоматическое управление вентилятором | **Проверено** | Waveshare PoE HAT (F) Rev1.2 |
+| Ручные скорости | **Проверено** | Различимые уровни PWM |
+| Manual Persistent 100% | **Проверено** | Вентилятор продолжает работать после запуска ESXi |
+| ACPI-ресурсы RP1 Ethernet | **Проверено** | GEM `RPI0001` и отдельная диагностика GPIO `RPI0002` |
+| Постоянные RX и TX | **Проверено** | Отдельный экспериментальный драйвер ESXi `RP1_GEM` на этой ACPI-разметке |
+
+Прошивка публикует аппаратные ресурсы, необходимые драйверу ESXi. Обработка пакетов реализована отдельным экспериментальным драйвером ESXi, а не UEFI.
 
 ### Что улучшено
 
@@ -109,15 +157,23 @@ The firmware combines components from multiple upstream projects. Their original
 - диагностический GPIO-диапазон вынесен в отдельное устройство `RPI0002`: `RP1_IO_BANK0_BASE` размером `0x30000`;
 - реализация вентилятора изолирована от Ethernet: она не меняет ACPI-сетевую часть, тактирование Ethernet, GPIO32, GEM или PHY.
 
-Это основа для экспериментального драйвера RP1 Ethernet в ESXi, а не законченный универсальный сетевой драйвер UEFI. Загрузка ESXi проверена; непрерывная работа RX/TX этой публикацией не заявляется.
+Это ACPI-основа экспериментального драйвера RP1 Ethernet для ESXi, а не универсальный сетевой драйвер UEFI. Постоянные RX и TX проверены с отдельным драйвером ESXi `RP1_GEM`; результат относится к проверенному сочетанию прошивки, драйвера и хоста.
 
 #### Управление вентилятором
 
 В меню настроек платформы доступны три режима:
 
+`Device Manager → Raspberry Pi Configuration → Cooling Fan`
+
 - **Automatic** — автоматическая кривая по температуре SoC;
 - **Manual (0–100%)** — заданная скорость действует до передачи управления ОС;
 - **Manual Persistent (0–100%)** — UEFI оставляет последнее состояние PWM после запуска ОС.
+
+| Режим | Во время работы UEFI | При `ExitBootServices` | После запуска ОС |
+|---|---|---|---|
+| Automatic | UEFI использует температурную кривую SoC | Таймер останавливается, исходное состояние оборудования восстанавливается | Управление может принять драйвер ОС |
+| Manual | UEFI принудительно задаёт выбранную скорость | Исходное состояние оборудования восстанавливается | Управление может принять драйвер ОС |
+| Manual Persistent | UEFI принудительно задаёт выбранную скорость | Запрограммированное состояние PWM сохраняется | Фиксированная скорость действует, пока её не изменит драйвер или сброс |
 
 Автоматическая кривая:
 
@@ -153,6 +209,16 @@ The firmware combines components from multiple upstream projects. Their original
 
 Всегда держите рабочий образ для отката. Сборка экспериментальная и не предназначена для установки без физического доступа к Raspberry Pi.
 
+### Исходный код и воспроизводимая сборка
+
+- [`BUILD.md`](BUILD.md) содержит точные версии исходников, окружение GCC 12.3.1 и порядок сборки.
+- [`patches/0001-rpi5-esxi-acpi-waveshare-fan.patch`](patches/0001-rpi5-esxi-acpi-waveshare-fan.patch) содержит изменения UEFI и применяется к зафиксированному коммиту `edk2-platforms`.
+- [`scripts/checkout-source.sh`](scripts/checkout-source.sh) подготавливает исходное дерево и применяет патч.
+- [`scripts/build-macos.sh`](scripts/build-macos.sh) проверяет компилятор и запускает сборку на macOS.
+- [`CHANGELOG.md`](CHANGELOG.md) содержит историю опубликованных изменений.
+
+Результаты аппаратной проверки можно отправить через [шаблон отчёта](https://github.com/Soulveig/rpi5-uefi-esxi-fan/issues/new?template=hardware-test-report.md).
+
 ### Исходная основа
 
 Сборка создана на основе следующих веток и зафиксированных коммитов:
@@ -167,4 +233,4 @@ The firmware combines components from multiple upstream projects. Their original
 
 ### Лицензии
 
-Прошивка объединяет компоненты нескольких upstream-проектов. Их исходные лицензии продолжают действовать; ссылки приведены в [`UPSTREAM.md`](UPSTREAM.md). Этот репозиторий не заменяет и не переопределяет лицензии компонентов прошивки.
+Прошивка объединяет компоненты нескольких upstream-проектов. Их исходные лицензии продолжают действовать; ссылки и копии уведомлений приведены в [`UPSTREAM.md`](UPSTREAM.md) и [`LICENSES/`](LICENSES/). Этот репозиторий не заменяет и не переопределяет лицензии компонентов прошивки.

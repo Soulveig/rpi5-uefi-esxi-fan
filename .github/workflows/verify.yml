@@ -44,34 +44,6 @@ jobs:
           git -C /tmp/rpi5-uefi checkout --detach FETCH_HEAD
           git -C /tmp/rpi5-uefi apply --check "$GITHUB_WORKSPACE/patches/0002-macos-build-compatibility.patch"
 
-      - name: Detect build-chain changes
-        id: build_chain
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          BEFORE_SHA: ${{ github.event.before }}
-          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: |
-          base="$BEFORE_SHA"
-          if [[ "$EVENT_NAME" == pull_request ]]; then
-            base="$PR_BASE_SHA"
-          fi
-          if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
-            base="${GITHUB_SHA}^"
-          fi
-          if git diff --name-only "$base" "$GITHUB_SHA" | grep -Eq '^(Dockerfile|\.dockerignore|scripts/(build-container|checkout-source)\.sh|patches/)'; then
-            echo 'required=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'required=false' >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Build pinned container
-        if: steps.build_chain.outputs.required == 'true'
-        run: docker build --tag rpi5-uefi-builder:12.3 .
-
-      - name: Build firmware from clean pinned sources
-        if: steps.build_chain.outputs.required == 'true'
-        run: docker run --rm --volume "$PWD:/project" rpi5-uefi-builder:12.3
-
       - name: Verify changelog entry for tag
         if: startsWith(github.ref, 'refs/tags/v')
         run: |

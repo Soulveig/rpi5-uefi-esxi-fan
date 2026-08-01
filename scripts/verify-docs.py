@@ -13,7 +13,6 @@ REQUIRED = (
     "CHANGELOG.md",
     "LICENSE",
     "SECURITY.md",
-    "Dockerfile",
     "SHA256SUMS",
     "sbom/RPI_EFI.spdx.json",
     "firmware/RPI_EFI.fd",

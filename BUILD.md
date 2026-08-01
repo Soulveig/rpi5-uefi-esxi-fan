@@ -71,14 +71,3 @@ fe8b19fe7917df07952be0a40e176a4c6eaef238d0bc83206e43e870800bb8a0
 ```
 
 A rebuild should be functionally equivalent. Byte-for-byte identity can depend on build-path or timestamp data emitted by the pinned toolchain and EDK2 build.
-
-## Container build
-
-The repository also provides a Linux container with the Ubuntu base image pinned by digest, APT packages resolved from the immutable `20260801T000000Z` Ubuntu snapshot, and Arm GNU Toolchain 12.3.Rel1 pinned by its official SHA-256 checksum:
-
-```bash
-docker build -t rpi5-uefi-builder:12.3 .
-docker run --rm -v "$PWD:/project" rpi5-uefi-builder:12.3
-```
-
-The result is written to `build/container-output/RPI_EFI.fd`. This makes the host tools and source checkout repeatable. It does not claim byte identity with the hardware-tested macOS artifact; a newly built image must be tested on hardware before replacing the published firmware.

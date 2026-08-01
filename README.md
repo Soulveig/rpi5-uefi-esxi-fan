@@ -108,7 +108,6 @@ Always keep a known-good rollback image. This is an experimental build and shoul
 - [`patches/0002-macos-build-compatibility.patch`](patches/0002-macos-build-compatibility.patch) makes the pinned root build script compatible with macOS and prebuilt BaseTools.
 - [`scripts/checkout-source.sh`](scripts/checkout-source.sh) prepares the pinned source tree and applies the patch.
 - [`scripts/build-macos.sh`](scripts/build-macos.sh) checks the compiler and runs the macOS build.
-- [`Dockerfile`](Dockerfile) and [`scripts/build-container.sh`](scripts/build-container.sh) provide a pinned Linux build environment.
 - [`sbom/RPI_EFI.spdx.json`](sbom/RPI_EFI.spdx.json) records the firmware components and pinned source revisions.
 - [`SECURITY.md`](SECURITY.md) documents vulnerability reporting and operational risks.
 - [`CHANGELOG.md`](CHANGELOG.md) records published firmware changes.
@@ -224,7 +223,6 @@ The original scripts, patches and documentation in this repository are licensed 
 - [`patches/0002-macos-build-compatibility.patch`](patches/0002-macos-build-compatibility.patch) адаптирует корневой скрипт зафиксированной версии к macOS и заранее собранным BaseTools.
 - [`scripts/checkout-source.sh`](scripts/checkout-source.sh) подготавливает исходное дерево и применяет патч.
 - [`scripts/build-macos.sh`](scripts/build-macos.sh) проверяет компилятор и запускает сборку на macOS.
-- [`Dockerfile`](Dockerfile) и [`scripts/build-container.sh`](scripts/build-container.sh) задают зафиксированную Linux-среду сборки.
 - [`sbom/RPI_EFI.spdx.json`](sbom/RPI_EFI.spdx.json) содержит состав прошивки и версии исходников.
 - [`SECURITY.md`](SECURITY.md) описывает передачу сведений об уязвимостях и эксплуатационные риски.
 - [`CHANGELOG.md`](CHANGELOG.md) содержит историю опубликованных изменений.

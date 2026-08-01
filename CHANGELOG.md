@@ -11,6 +11,11 @@ All notable published changes are recorded here.
 - Automatic curve stage display, including explicit fail-safe 100% status;
 - volatile telemetry variables that do not write periodic updates to NVRAM.
 
+### Changed
+
+- removed GitHub and container firmware builds; releases now publish only the locally built artifact that is explicitly selected after hardware testing;
+- retained checksum, patch applicability, documentation, SBOM and attestation checks.
+
 ## [0.1.3] - 2026-08-01
 
 - pinned the Ubuntu container image by digest and APT packages to an immutable snapshot;

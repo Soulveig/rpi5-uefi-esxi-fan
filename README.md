@@ -51,12 +51,6 @@ The firmware exposes the hardware resources required by the ESXi driver. Packet 
 
 ### Improvements
 
-#### BIOS identification
-
-- changes the SMBIOS Type 0 BIOS version from a technical Git-derived value to the human-readable `RPI 5 UEFI 0.2.1 [Soulveig Edition]`;
-- makes the release version the single source for this field, so future builds automatically use `RPI 5 UEFI <version> [Soulveig Edition]`;
-- lets ESXi identify the installed Soulveig Edition firmware and its release directly in the host summary, without relying on a Git tag, commit hash, or temporary build label.
-
 #### Network
 
 - preserves the working RP1 Ethernet ACPI layout from the tested v0.8 build;
@@ -105,6 +99,12 @@ In Automatic and standard Manual modes, the firmware restores the saved PWM1 clo
 - makes the boot microSD available in UEFI so the variable service can update the NVRAM area inside `RPI_EFI.fd` and preserve UEFI settings across reboots and power cycles.
 
 Settings are written when UEFI reaches `ReadyToBoot`. After changing a setting, continue booting or reset once before removing power.
+
+#### BIOS identification
+
+- changes the SMBIOS Type 0 BIOS version from a technical Git-derived value to the human-readable `RPI 5 UEFI 0.2.1 [Soulveig Edition]`;
+- makes the release version the single source for this field, so future builds automatically use `RPI 5 UEFI <version> [Soulveig Edition]`;
+- lets ESXi identify the installed Soulveig Edition firmware and its release directly in the host summary, without relying on a Git tag, commit hash, or temporary build label.
 
 ### Verified configuration
 
@@ -180,12 +180,6 @@ The original documentation in this repository is licensed under [`BSD-2-Clause-P
 
 ### Что улучшено
 
-#### Идентификация BIOS
-
-- техническое значение версии из Git заменено в SMBIOS Type 0 на понятную строку `RPI 5 UEFI 0.2.1 [Soulveig Edition]`;
-- версия релиза стала единым источником для этого поля, поэтому следующие сборки автоматически получат строку `RPI 5 UEFI <версия> [Soulveig Edition]`;
-- ESXi теперь показывает установленную редакцию Soulveig Edition и её релиз прямо в сводке хоста — без Git-тега, хеша коммита или временного имени сборки.
-
 #### Сетевая часть
 
 - сохранена рабочая ACPI-разметка RP1 Ethernet из проверенной сборки v0.8;
@@ -234,6 +228,12 @@ The original documentation in this repository is licensed under [`BSD-2-Clause-P
 - загрузочная microSD стала доступна в UEFI, благодаря чему служба переменных может обновлять область NVRAM внутри `RPI_EFI.fd` и сохранять настройки после перезагрузки и отключения питания.
 
 Настройки записываются на этапе `ReadyToBoot`. После изменения настройки продолжите загрузку или один раз выполните reset перед отключением питания.
+
+#### Идентификация BIOS
+
+- техническое значение версии из Git заменено в SMBIOS Type 0 на понятную строку `RPI 5 UEFI 0.2.1 [Soulveig Edition]`;
+- версия релиза стала единым источником для этого поля, поэтому следующие сборки автоматически получат строку `RPI 5 UEFI <версия> [Soulveig Edition]`;
+- ESXi теперь показывает установленную редакцию Soulveig Edition и её релиз прямо в сводке хоста — без Git-тега, хеша коммита или временного имени сборки.
 
 ### Проверенная конфигурация
 

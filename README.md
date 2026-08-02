@@ -35,10 +35,18 @@ No D0 image is currently published. A D0-labelled artifact will be added only af
 | Automatic fan control | **Verified** | Waveshare PoE HAT (F) Rev1.2 |
 | Manual fan speeds | **Verified** | Distinguishable PWM speed levels |
 | Manual Persistent at 100% | **Verified** | Fan remains active after ESXi startup |
+| microSD access from UEFI | **Verified** | Card is exposed as a filesystem after the BCM2712 CMD6 workaround |
+| UEFI setting persistence | **Verified** | Settings survive reboot and complete power removal after a normal reset/boot path |
 | RP1 Ethernet ACPI resources | **Verified** | `RPI0001` GEM plus separate `RPI0002` GPIO diagnostics |
 | Sustained RX and TX | **Verified** | Separate experimental `RP1_GEM` ESXi driver on this ACPI layout |
 
 The firmware exposes the hardware resources required by the ESXi driver. Packet processing itself is implemented by the separate experimental ESXi driver, not by UEFI.
+
+#### microSD and UEFI settings
+
+The BCM2712 SDHCI controller may report a spurious response CRC/index error for SD `CMD6` after entering 4-bit mode. This build applies a command-specific workaround while retaining data CRC validation and normal response validation for every other command. The boot microSD is consequently exposed to UEFI, allowing the variable service to update the NVRAM area stored inside `RPI_EFI.fd`.
+
+Settings are committed when UEFI reaches its normal `ReadyToBoot` path. Do not remove power immediately after saving settings in the setup menu. Continue booting or reset once first; subsequent reboots and complete power cycles preserve the saved values.
 
 ### Improvements
 
@@ -141,10 +149,18 @@ The original documentation in this repository is licensed under [`BSD-2-Clause-P
 | Автоматическое управление вентилятором | **Проверено** | Waveshare PoE HAT (F) Rev1.2 |
 | Ручные скорости | **Проверено** | Различимые уровни PWM |
 | Manual Persistent 100% | **Проверено** | Вентилятор продолжает работать после запуска ESXi |
+| Доступ к microSD из UEFI | **Проверено** | Карта публикуется как файловая система после обхода CMD6 для BCM2712 |
+| Сохранение настроек UEFI | **Проверено** | Настройки переживают перезагрузку и полное снятие питания после штатного reset/boot |
 | ACPI-ресурсы RP1 Ethernet | **Проверено** | GEM `RPI0001` и отдельная диагностика GPIO `RPI0002` |
 | Постоянные RX и TX | **Проверено** | Отдельный экспериментальный драйвер ESXi `RP1_GEM` на этой ACPI-разметке |
 
 Прошивка публикует аппаратные ресурсы, необходимые драйверу ESXi. Обработка пакетов реализована отдельным экспериментальным драйвером ESXi, а не UEFI.
+
+#### microSD и настройки UEFI
+
+Контроллер SDHCI в BCM2712 может ошибочно сообщать CRC/Index Error ответа SD-команды `CMD6` после перехода в четырёхбитный режим. В этой сборке применяется обход только для данной команды; проверка CRC данных и обычная проверка ответов всех остальных команд сохранены. Благодаря этому загрузочная microSD доступна в UEFI, а служба переменных может обновлять область NVRAM внутри `RPI_EFI.fd`.
+
+Настройки записываются при достижении UEFI штатного этапа `ReadyToBoot`. Не отключайте питание сразу после сохранения в меню настроек: сначала продолжите загрузку либо один раз выполните reset. После этого сохранённые значения переживают последующие перезагрузки и полные отключения питания.
 
 ### Что улучшено
 

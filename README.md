@@ -48,12 +48,6 @@ No D0 image is currently published. A D0-labelled artifact will be added only af
 
 The firmware exposes the hardware resources required by the ESXi driver. Packet processing itself is implemented by the separate experimental ESXi driver, not by UEFI.
 
-#### microSD and UEFI settings
-
-The BCM2712 SDHCI controller may report a spurious response CRC/index error for SD `CMD6` after entering 4-bit mode. This build applies a command-specific workaround while retaining data CRC validation and normal response validation for every other command. The boot microSD is consequently exposed to UEFI, allowing the variable service to update the NVRAM area stored inside `RPI_EFI.fd`.
-
-Settings are committed when UEFI reaches its normal `ReadyToBoot` path. Do not remove power immediately after saving settings in the setup menu. Continue booting or reset once first; subsequent reboots and complete power cycles preserve the saved values.
-
 ### Improvements
 
 #### Network
@@ -96,6 +90,14 @@ A 5 °C downward hysteresis is used. UEFI timer updates stop at `ExitBootService
 In Automatic and standard Manual modes, the firmware restores the saved PWM1 clock, GPIO45, pad, PWM channel, and global PWM state. In Manual Persistent mode, the last programmed state is intentionally retained for an operating system that does not yet have a driver for this fan.
 
 > **Warning:** Manual Persistent hands an already configured hardware state to the operating system and does not provide further thermal regulation. Select a sufficient fixed speed and monitor the temperature. For everyday Raspberry Pi OS use, Automatic control by the operating-system driver is recommended.
+
+#### microSD card CRC fix
+
+- fixes a spurious response CRC/index error reported by the BCM2712 SDHCI controller for SD `CMD6` after entering 4-bit mode;
+- applies the workaround only to `CMD6`, while retaining data CRC validation and normal response validation for all other commands;
+- makes the boot microSD available in UEFI so the variable service can update the NVRAM area inside `RPI_EFI.fd` and preserve UEFI settings across reboots and power cycles.
+
+Settings are written when UEFI reaches `ReadyToBoot`. After changing a setting, continue booting or reset once before removing power.
 
 ### Verified configuration
 
@@ -168,12 +170,6 @@ The original documentation in this repository is licensed under [`BSD-2-Clause-P
 
 Прошивка публикует аппаратные ресурсы, необходимые драйверу ESXi. Обработка пакетов реализована отдельным экспериментальным драйвером ESXi, а не UEFI.
 
-#### microSD и настройки UEFI
-
-Контроллер SDHCI в BCM2712 может ошибочно сообщать CRC/Index Error ответа SD-команды `CMD6` после перехода в четырёхбитный режим. В этой сборке применяется обход только для данной команды; проверка CRC данных и обычная проверка ответов всех остальных команд сохранены. Благодаря этому загрузочная microSD доступна в UEFI, а служба переменных может обновлять область NVRAM внутри `RPI_EFI.fd`.
-
-Настройки записываются при достижении UEFI штатного этапа `ReadyToBoot`. Не отключайте питание сразу после сохранения в меню настроек: сначала продолжите загрузку либо один раз выполните reset. После этого сохранённые значения переживают последующие перезагрузки и полные отключения питания.
-
 ### Что улучшено
 
 #### Сетевая часть
@@ -216,6 +212,14 @@ The original documentation in this repository is licensed under [`BSD-2-Clause-P
 В режимах Automatic и обычном Manual прошивка восстанавливает сохранённое состояние PWM1, GPIO45, pad, канала и глобальных регистров PWM. В режиме Manual Persistent последнее запрограммированное состояние намеренно сохраняется для ОС, в которой пока нет драйвера этого вентилятора.
 
 > **Предупреждение:** Manual Persistent передаёт ОС уже настроенное аппаратное состояние и не выполняет дальнейшую терморегуляцию. Выбирайте достаточную постоянную скорость и контролируйте температуру. Для повседневной Raspberry Pi OS рекомендуется Automatic с управлением драйвером ОС.
+
+#### Исправление CRC карты microSD
+
+- исправлена ложная ошибка CRC/index ответа, которую контроллер SDHCI в BCM2712 выдавал для SD-команды `CMD6` после перехода в четырёхбитный режим;
+- обход применяется только к `CMD6`, а проверка CRC данных и обычная проверка ответов всех остальных команд сохранены;
+- загрузочная microSD стала доступна в UEFI, благодаря чему служба переменных может обновлять область NVRAM внутри `RPI_EFI.fd` и сохранять настройки после перезагрузки и отключения питания.
+
+Настройки записываются на этапе `ReadyToBoot`. После изменения настройки продолжите загрузку или один раз выполните reset перед отключением питания.
 
 ### Проверенная конфигурация
 

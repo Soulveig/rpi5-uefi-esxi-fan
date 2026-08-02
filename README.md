@@ -26,6 +26,7 @@ Experimental UEFI build for Raspberry Pi 5, tested with VMware ESXi Arm and a Wa
 1. **BCM54213 for ESXi network ACPI**
 2. **Fan Control for Waveshare PoE HAT (F) Rev1.2**
 3. **UEFI microSD Card CRC Error fix**
+4. **Release-aware SMBIOS BIOS version**
 
 Ready-to-use image: [`firmware/RPI_EFI.fd`](firmware/RPI_EFI.fd). GitHub Releases use the same required filename: `RPI_EFI.fd`.
 
@@ -49,6 +50,12 @@ No D0 image is currently published. A D0-labelled artifact will be added only af
 The firmware exposes the hardware resources required by the ESXi driver. Packet processing itself is implemented by the separate experimental ESXi driver, not by UEFI.
 
 ### Improvements
+
+#### BIOS identification
+
+- changes the SMBIOS Type 0 BIOS version from a technical Git-derived value to the human-readable `RPI 5 UEFI 0.2.1 [Soulveig Edition]`;
+- makes the release version the single source for this field, so future builds automatically use `RPI 5 UEFI <version> [Soulveig Edition]`;
+- lets ESXi identify the installed Soulveig Edition firmware and its release directly in the host summary, without relying on a Git tag, commit hash, or temporary build label.
 
 #### Network
 
@@ -148,6 +155,7 @@ The original documentation in this repository is licensed under [`BSD-2-Clause-P
 1. **BCM54213 для сетевого ACPI ESXi**
 2. **Управление вентилятором Waveshare PoE HAT (F) Rev1.2**
 3. **Исправление CRC Error карты microSD в UEFI**
+4. **Версия BIOS в SMBIOS, соответствующая релизу**
 
 Готовый образ: [`firmware/RPI_EFI.fd`](firmware/RPI_EFI.fd). В GitHub Releases используется то же обязательное имя: `RPI_EFI.fd`.
 
@@ -171,6 +179,12 @@ The original documentation in this repository is licensed under [`BSD-2-Clause-P
 Прошивка публикует аппаратные ресурсы, необходимые драйверу ESXi. Обработка пакетов реализована отдельным экспериментальным драйвером ESXi, а не UEFI.
 
 ### Что улучшено
+
+#### Идентификация BIOS
+
+- техническое значение версии из Git заменено в SMBIOS Type 0 на понятную строку `RPI 5 UEFI 0.2.1 [Soulveig Edition]`;
+- версия релиза стала единым источником для этого поля, поэтому следующие сборки автоматически получат строку `RPI 5 UEFI <версия> [Soulveig Edition]`;
+- ESXi теперь показывает установленную редакцию Soulveig Edition и её релиз прямо в сводке хоста — без Git-тега, хеша коммита или временного имени сборки.
 
 #### Сетевая часть
 

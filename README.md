@@ -6,14 +6,16 @@
 
 <table>
   <tr>
-    <td width="33%"><img src="docs/images/uefi-raspberry-pi-configuration.jpg" alt="Raspberry Pi Configuration menu with the Cooling Fan entry"></td>
-    <td width="33%"><img src="docs/images/uefi-fan-control-modes.jpg" alt="UEFI Cooling Fan mode selection"></td>
-    <td width="33%"><img src="docs/images/uefi-manual-persistent-warning.jpg" alt="UEFI Manual Persistent fan mode warning"></td>
+    <td width="25%"><img src="docs/images/uefi-raspberry-pi-configuration.jpg" alt="Raspberry Pi Configuration menu with the Cooling Fan entry"></td>
+    <td width="25%"><img src="docs/images/uefi-fan-control-modes.jpg" alt="UEFI Cooling Fan mode selection"></td>
+    <td width="25%"><img src="docs/images/uefi-manual-persistent-warning.jpg" alt="UEFI Manual Persistent fan mode warning"></td>
+    <td width="25%"><img src="docs/images/uefi-soc-temperature.png" alt="SoC Temperature on the UEFI main screen"></td>
   </tr>
   <tr>
     <td align="center">Cooling Fan menu / Меню Cooling Fan</td>
     <td align="center">Automatic, Manual and Manual Persistent modes / Режимы управления</td>
     <td align="center">Manual Persistent warning / Предупреждение режима Manual Persistent</td>
+    <td align="center">SoC temperature / Температура SoC</td>
   </tr>
 </table>
 
@@ -27,6 +29,7 @@ Experimental UEFI build for Raspberry Pi 5, tested with VMware ESXi Arm and a Wa
 2. **Fan Control for Waveshare PoE HAT (F) Rev1.2**
 3. **UEFI microSD Card CRC Error fix**
 4. **Release-aware SMBIOS BIOS version**
+5. **SoC temperature on the UEFI main screen**
 
 Ready-to-use image: [`firmware/RPI_EFI.fd`](firmware/RPI_EFI.fd). GitHub Releases use the same required filename: `RPI_EFI.fd`.
 
@@ -44,6 +47,7 @@ No D0 image is currently published. A D0-labelled artifact will be added only af
 | Manual Persistent at 100% | **Verified** | Fan remains active after ESXi startup |
 | microSD access from UEFI | **Verified** | Card is exposed as a filesystem after the BCM2712 CMD6 workaround |
 | UEFI setting persistence | **Verified** | Settings survive reboot and complete power removal after a normal reset/boot path |
+| SoC temperature display | **Verified** | BCM2712 temperature is shown on the UEFI main screen and refreshes when the screen is reopened |
 | RP1 Ethernet ACPI resources | **Verified** | `RPI0001` GEM plus separate `RPI0002` GPIO diagnostics |
 | Sustained RX and TX | **Verified** | Separate experimental `RP1_GEM` ESXi driver on this ACPI layout |
 
@@ -106,6 +110,14 @@ Settings are written when UEFI reaches `ReadyToBoot`. After changing a setting, 
 - makes the release version the single source for this field, so future builds automatically use `RPI 5 UEFI <version> [Soulveig Edition]`;
 - lets ESXi identify the installed Soulveig Edition firmware and its release directly in the host summary, without relying on a Git tag, commit hash, or temporary build label.
 
+#### SoC temperature
+
+- shows `SoC Temperature` on the UEFI main screen using the Raspberry Pi firmware mailbox temperature property for sensor ID 0;
+- converts the returned millidegree-Celsius value to one decimal place, for example `38.9 °C`;
+- reads the sensor when the main screen is opened. The value is not updated continuously while that screen remains open;
+- refreshes the displayed value after entering another menu and returning to the main screen;
+- displays `SoC Temperature: unavailable` if the firmware mailbox request cannot be completed.
+
 ### Verified configuration
 
 - Raspberry Pi 5 (non-D0);
@@ -156,6 +168,7 @@ The original documentation in this repository is licensed under [`BSD-2-Clause-P
 2. **Управление вентилятором Waveshare PoE HAT (F) Rev1.2**
 3. **Исправление CRC Error карты microSD в UEFI**
 4. **Версия BIOS в SMBIOS, соответствующая релизу**
+5. **Температура SoC на главном экране UEFI**
 
 Готовый образ: [`firmware/RPI_EFI.fd`](firmware/RPI_EFI.fd). В GitHub Releases используется то же обязательное имя: `RPI_EFI.fd`.
 
@@ -173,6 +186,7 @@ The original documentation in this repository is licensed under [`BSD-2-Clause-P
 | Manual Persistent 100% | **Проверено** | Вентилятор продолжает работать после запуска ESXi |
 | Доступ к microSD из UEFI | **Проверено** | Карта публикуется как файловая система после обхода CMD6 для BCM2712 |
 | Сохранение настроек UEFI | **Проверено** | Настройки переживают перезагрузку и полное снятие питания после штатного reset/boot |
+| Отображение температуры SoC | **Проверено** | Температура BCM2712 показана на главном экране UEFI и обновляется при повторном открытии экрана |
 | ACPI-ресурсы RP1 Ethernet | **Проверено** | GEM `RPI0001` и отдельная диагностика GPIO `RPI0002` |
 | Постоянные RX и TX | **Проверено** | Отдельный экспериментальный драйвер ESXi `RP1_GEM` на этой ACPI-разметке |
 
@@ -234,6 +248,14 @@ The original documentation in this repository is licensed under [`BSD-2-Clause-P
 - техническое значение версии из Git заменено в SMBIOS Type 0 на понятную строку `RPI 5 UEFI 0.2.1 [Soulveig Edition]`;
 - версия релиза стала единым источником для этого поля, поэтому следующие сборки автоматически получат строку `RPI 5 UEFI <версия> [Soulveig Edition]`;
 - ESXi теперь показывает установленную редакцию Soulveig Edition и её релиз прямо в сводке хоста — без Git-тега, хеша коммита или временного имени сборки.
+
+#### Температура SoC
+
+- значение `SoC Temperature` выводится на главном экране UEFI и получается через температурное свойство mailbox-прошивки Raspberry Pi для датчика с ID 0;
+- полученное значение в тысячных долях градуса Цельсия преобразуется до одного знака после запятой, например `38.9 °C`;
+- датчик опрашивается при открытии главного экрана. Пока экран остаётся открытым, значение непрерывно не обновляется;
+- после перехода в другое меню и возврата на главный экран температура считывается заново;
+- если mailbox-запрос выполнить не удалось, выводится `SoC Temperature: unavailable`.
 
 ### Проверенная конфигурация
 

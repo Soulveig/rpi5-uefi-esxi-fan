@@ -1,4 +1,4 @@
-# Raspberry Pi 5 UEFI: ESXi network ACPI + Waveshare PoE HAT (F) Rev1.2 + Fan Control
+# Raspberry Pi 5 8GB UEFI [Soulveig Edition]
 
 [English](#english) | [Русский](#русский) | [Releases](https://github.com/Soulveig/rpi5-uefi-esxi-fan/releases)
 
@@ -20,6 +20,12 @@
 ## English
 
 Experimental UEFI build for Raspberry Pi 5, tested with VMware ESXi Arm and a Waveshare PoE HAT (F) Rev1.2 with one three-wire fan.
+
+### Key changes
+
+1. **BCM54213 for ESXi network ACPI**
+2. **Fan Control for Waveshare PoE HAT (F) Rev1.2**
+3. **UEFI microSD Card CRC Error fix**
 
 Ready-to-use image: [`firmware/RPI_EFI.fd`](firmware/RPI_EFI.fd). GitHub Releases use the same required filename: `RPI_EFI.fd`.
 
@@ -134,6 +140,12 @@ The original documentation in this repository is licensed under [`BSD-2-Clause-P
 ## Русский
 
 Экспериментальная сборка UEFI для Raspberry Pi 5, проверенная с VMware ESXi Arm и Waveshare PoE HAT (F) Rev1.2 с одним трёхпроводным вентилятором.
+
+### Ключевые изменения
+
+1. **BCM54213 для сетевого ACPI ESXi**
+2. **Управление вентилятором Waveshare PoE HAT (F) Rev1.2**
+3. **Исправление CRC Error карты microSD в UEFI**
 
 Готовый образ: [`firmware/RPI_EFI.fd`](firmware/RPI_EFI.fd). В GitHub Releases используется то же обязательное имя: `RPI_EFI.fd`.
 
